@@ -241,7 +241,85 @@ Para importar archivos de texto utilizaremos un ejemplo reducido de Ventas con l
 
 image::EsquemaVentas.png[title = "Esquema de Ventas"]
 
-Las tablas siguientes muestran la estructura de los archivos de texto:
+En el Anexo 1 se muestra el código SQL para la creación de las tablas.
+
+=== Pasos para la importación de archivos de texto en ODI
+
+Para poder lleva a cabo las tareas de Extracción, Transformación y Carga (ETL) de datos en ODI primero tenemos que crear la infraestructura relacionada con las fuentes y destinos ETL.
+
+Una vez creada la infraestructura, basta con añadir las fuentes de datos, destinos de datos y configurar las operaciones de transformación y carga de datos.
+
+==== Creación de la infraestructura ODI para la importación de datos
+
+Antes de llevar a cabo las operaciones ETL tenemos que realizar estos pasos:
+
+* Definir la arquitectura física de origen (ruta en la que están almacenados los archivos de texto, p.e. `/home/oracle/Documents/data`).
+* Definir la arquitectura lógica de datos (nombre que usaremos para referirnos a la ruta en la que están los archivos a importar p.e. `MyFlatFiles`).
+* Crear las tablas de destino (p.e. `Cuando, Donde, Que, Venta`).
+* Definir la arquitectura física de destino (esquema Oracle en el que se almacenará el resultado del proceso ETL, p.e. `granadam`).
+* Definir la arquitectura lógica de destino (nombre que usaremos para referirnos al esquema Oracle donde se guardarán el resultado del ETL, p.e. `DBVentas`.)
+
+Veamos los pasos:
+
+. Definir la arquitectura física de origen. En este paso definimos la ruta en la que se almacenan los archivos de texto que vamos a importar.
+    .. Topology -> Physical Architecture -> Technologies -> File. Clic derecho sobre `FILE_GENERIC` y elegir Open.
+    .. Host: `localhost`, User: `oracle`, Password: `oracle`.
+    .. Probar conexión
+    .. Topology -> Physical Architecture -> Technologies -> FILE_GENERIC. Clic derecho y elegir New Physical Schema
+    .. Directory (Schema) y Directory (Work Schema): `/home/oracle/Documents/data`
+. Definir la arquitectura lógica de origen. En este paso asignamos un nombre a la ruta en la que se almacenan los archivos de texto a importar.
+    .. Topology -> Logical Architecture -> Technologies -> File. Clic derecho y elegir New Logical Schema
+    .. Name: `MyFlatFiles`, Physical Schemas listbox: `FILE_GENERIC ... /UGR2018/data`.
+. Crear una carpeta donde guardar los modelos de las fuentes.
+    .. Designer -> Models -> New Model Folder.
+    .. Name: `FlatFilesVentas`
+    .. Designer -> Models -> FlatFilesVentas. Clic derecho y seleccionar New Model.
+    .. Name: `FFVentas`, Technology: `File`, Logical Schema: `MyFlatFiles`.
+. Crear las tablas de destino. `CREATE TABLE ...`.
+. Definir la arquitectura física de destino. En este paso especificamos la instancia de Oracle en la que se almacenará la importación de los datos.
+    .. Topology -> Physical Architecture -> Oracle. Clic derecho y seleccionar New Data Server
+    .. Name: `DBVentas`, Instance: `orcl`, User: `granadam`, Password: `granada`.
+    .. JDBC Driver: oracle.jdbc.OracleDriver, JDBC Url: `jdbc:oracle:thin:@localhost:1521/orcl`
+    .. Probar conexión
+    .. Topology -> Physical Architecture -> Oracle -> DBVentas -> New Physical Schema
+    .. Schema (Schema), Schema (Work Schema): `granadam`
+. Definir la arquitectura lógica de destino. En este paso asignamos un nombre al esquema en el que estará la tabla de destino de la importación.
+    .. Topology -> Logical Architecture -> Oracle. Clic derecho y elegir New Logical Schema
+    .. Name: `DBVentas`, Physical schema listbox: `DBVentas.granadam`.
+. Definir el modelo del destino. En este paso se crea un grupo en ODI que representa el esquema Oracle en el que estarán las tablas de destino.
+    .. Designer -> Models -> New Model.
+    .. Name: `DBVentas`, Technology: `Oracle`, Logical schema: `DBVentas`.
+    .. Reverse Engineer -> Reverse Engineer.
+    .. Designer -> Models -> DBVentas. Seleccionar una tabla, hacer clic derecho sobre View Data. Por ahora, no hay nada.
+. Importación de módulos. En este paso se importan los módulos (plugins) necesarios para la importación y definir los mappings.
+    .. Designer -> Projects -> New Project
+    .. Name: Ventas
+    .. Import Knowledge modules 
+        ... Designer -> Projects -> Ventas -> Knowledge modules. Clic derecho y seleccionar Import knowledge modules.
+        ... File Import Directory. Buscar
+        ... File Name: `/u01/Middleware/ODI12c/odi/sdk/xml-reference`
+        ... Seleccionar IKM SQL Incremental Update y LKM File to SQL.
+
+=== Importación de los archivos de texto
+
+Una vez creada la infraestructura para el proceso ETL procederemos a la importación de los archivos de texto del ejemplo. Estos pasos se repetirán para cada uno de los archivos de texto que se vayan a importar.
+
+. Crear el _data store_ asociado al archivo de texto. Para ello, se obtendrá la estructura del archivo de texto a importar.
+    .. Designer -> Models -> FlatFilesVentas -> FFVentas. Clic derecho y seleccionar New Datastore
+    .. Elegir nombre para el archivo, seleccionar el archivo de texto, marcar si es delimitado, indicar si hay fila de encabezado, indicar si los separadores de registro y de campo son MS-DOS o Unix, obtener una vista previa de los datos.
+
+. Preparar el mapping. 
+    .. Designer -> Projects -> Ventas -> First Folder -> Mappings. Clic derecho y seleccionar New Mapping
+    .. Name: p.e. `MappingCuando`
+    .. Colocar archivo de origen y tabla de destino y crear mapping de los atributos.
+    .. Seleccionar tabla de destino. Logical tab -> Target. Integration Type: `Incremental Update`
+    .. Abrir ventana Properties. Physical tab. Seleccionar el proceso Loading KM. Loading Knowledge Module: `LKM SQL to Oracle`.
+    
+. Validar y ejecutar el mapping
+
+. En Operations -> Session List -> Sessions se puede ver el estado de la ejecución del mapping.
+
+Las tablas siguientes muestran la estructura de los archivos de texto. Em importante seguir estas indicaciones a la hora de especificar el tipo de las columnas importadas para que luego no haya errores de falta de corrspondencia de tipos al ejecutar los mappings.
 
 
 .Estructura de la tabla Cuando
@@ -288,85 +366,438 @@ Las tablas siguientes muestran la estructura de los archivos de texto:
 |clientes | NUMBER
 |===
 
-En el Anexo 1 se muestra el código SQL para la creación de las tablas.
+== Creación de dimensiones
 
-=== Pasos para la importación de archivos de texto en ODI
+Para la definición de una dimensión en ODI tendremos que especificar:
 
-Para poder lleva a cabo las tareas de Extracción, Transformación y Carga (ETL) de datos en ODI primero tenemos que crear la infraestructura relacionada con las fuentes y destinos ETL.
+. Nombre de la dimensión.
+. Tipo de implementación (estrella o copo de nieve).
+. Datastore. Indica la tabla en el que se va a almacenar la dimensión.
 
-Una vez creada la infraestructura, basta con añadir las fuentes de datos, destinos de datos y configurar las operaciones de transformación y carga de datos.
++
+[NOTE]
+====
+Cada nivel puede tener su propio datastore.
+====
 
-==== Creación de la infraestructura ODI para la importación de datos
-
-Antes de llevar a cabo las operaciones ETL tenemos que realizar estos pasos:
-
-* Definir la arquitectura física de origen (ruta en la que están almacenados los archivos de texto, p.e. `/home/mtorres/Documents/UGR2018/data`).
-* Definir la arquitectura lógica de datos (nombre que usaremos para referirnos a la ruta en la que están los archivos a importar p.e. `MyFlatFiles`).
-* Crear las tablas de destino (p.e. `Cuando, Donde, Que, Venta`).
-* Definir la arquitectura física de destino (esquema Oracle en el que se almacenará el resultado del proceso ETL, p.e. `granadam`).
-* Definir la arquitectura lógica de destino (nombre que usaremos para referirnos al esquema Oracle donde se guardarán el resultado del ETL, p.e. `DBVentas`.)
-
-Veamos los pasos:
-
-. Definir la arquitectura física de origen. En este paso definimos la ruta en la que se almacenan los archivos de texto que vamos a importar.
-    .. Topology -> Physical Architecture -> Technologies -> File. Clic derecho sobre `FILE_GENERIC` y elegir Open.
-    .. Host: `localhost`, User: `oracle`, Password: `oracle`.
-    .. Probar conexión
-    .. Topology -> Physical Architecture -> Technologies -> FILE_GENERIC. Clic derecho y elegir New Physical Schema
-    .. Directory (Schema) y Directory (Work Schema): `/home/mtorres/Documents/UGR2018/data`
-. Definir la arquitectura lógica de origen. En este paso asignamos un nombre a la ruta en la que se almacenan los archivos de texto a importar.
-    .. Topology -> Logical Architecture -> Technologies -> File. Clic derecho y elegir New Logical Schema
-    .. Name: `MyFlatFiles`, Physical schema listbox: `FILE_GENERIC ... /UGR2018/data`.
-. Crear una carpeta donde guardar los modelos de las fuentes.
-    .. Designer -> Models -> New Model Folder.
-    .. Name: `FlatFilesVentas`
-. Crear las tablas de destino. `CREATE TABLE ...`.
-. Definir la arquitectura física de destino. En este paso especificamos la instancia de Oracle en la que se almacenará la importación de los datos.
-    .. Topology -> Physical Architecture -> Oracle. Clic derecho y seleccionar New Data Server
-    .. Name: `DB-HR`, Instance: `orcl`, User: `granadam`, Password: `granada`.
-    .. JDBC Driver: oracle.jdbc.OracleDriver, JDBC Url: `jdbc:oracle:thin:@localhost:1521/orcl`
-    .. Probar conexión
-    .. Topology -> Physical Architecture -> Oracle -> DB-HR -> New Physical Schema
-    .. Schema (Schema), Schema (Work Schema): `granadam`
-. Definir la arquitectura lógica de destino. En este paso asignamos un nombre al esquema en el que estará la tabla de destino de la importación.
-    .. Topology -> Logical Architecture -> Oracle. Clic derecho y elegir New Logical Schema
-    .. Name: `DBVentas`, Physical schema listbox: `DBVentas.granadam`.
-. Definir el modelo del destino. En este paso se crea un grupo en ODI que representa el esquema Oracle en el que estarán las tablas de destino.
-    .. Designer -> Models -> New Model.
-    .. Name: `DBVentas`, Technology: `Oracle`, Logical schema: `DBVentas`.
-    .. Reverse Engineer -> Reverse Engineer.
-    .. Designer -> Models -> DB-HR -> View Data.
-. Importación de módulos. En este paso se importan los módulos (plugins) necesarios para la importación y definir los mappings.
-    .. Designer -> Projects -> New Project
-    .. Name: Ventas
-    .. Import Knowledge modules 
-        ... Designer -> Projects -> Ventas -> Knowledge modules. Clic derecho y seleccionar Import knowledge modules.
-        ... File Import Directory. Buscar
-        ... File Name: `/u01/Middleware/ODI12c/odi/sdk/xml-reference`
-        ... Seleccionar IKM SQL Incremental Update y LKM File to SQL.
-
-=== Importación de los archivos de texto
-
-Una vez creada la infraestructura para el proceso ETL procederemos a la importación de los archivos de texto del ejemplo. Estos pasos se repetirán para cada uno de los archivos de texto que se vayan a importar.
-
-. Crear el _data store_ asociado al archivo de texto. Para ello, se obtendrá la estructura del archivo de texto a importar.
-    .. Designer -> Models -> FlatFilesVentas -> FFVentas. Clic derecho y seleccionar New Datastore
-    .. Elegir nombre para el archivo, seleccionar el archivo de texto, marcar si es delimitado, indicar si hay fila de encabezado, indicar si los separadores de registro y de campo son MS-DOS o Unix, obtener una vista previa de los datos.
-
-. Preparar el mapping. 
-    .. Designer -> Projects -> Ventas -> First Folder -> Mappings. Clic derecho y seleccionar New Mapping
-    .. Name: p.e. `MappingCuando`
-    .. Colocar archivo de origen y tabla de destino y crear mapping de los atributos.
-    .. Seleccionar tabla de destino. Logical tab -> Target. Integration Type: `Incremental Update`
-    .. Physical tab. Loading Knowledge Module: `LKM SQL to SQL`.
+. Secuencia para la creación de claves generadas.
+. Niveles de la dimensión.
+    .. Para cada nivel se especifica el datastore que contiene los datos del nivel. 
+    .. En cada nivel se define una clave generada, una clave natural y un atributo que le da nombre al nivel.
+    .. Cada nivel establece su relación con el nivel superior. 
+. Jerarquías de la dimensión, estableciendo los niveles que la forman ordenados de nivel superior a nivel inferior.
     
-. Validar y ejecutar el mapping
+A continuación crearemos un cubo de Ventas tomando como base los datos de ventas almacenados en el esquema XWEEK. Las tablas de staging están en el esquema BI_SALES.
 
-. En Operations -> Session List -> Sessions se puede ver el estado de la ejecución del mapping.
+=== Creación de la dimensión Promocion
 
-== Creación de una dimensión
+image::DimensionPromocion.png[Dimensión Promoción y sus tablas base]
+
+
+[cols="1,2", options="header"] 
+.Niveles de la dimensión Promotion
+|===
+|Nivel
+|Staging Datastore
+
+|Total
+|PROMOTIONS_TOTAL_STG
+
+|Category
+|PROMOTIONS_CATEGORY_STG
+
+|Subcategory
+|PROMOTIONS_SUBCATEGORY_STG
+
+|Promotion
+|PROMOTIONS_PROMOTION_STG
+
+|===
+
+A continuación, definiremos los atributos de cada nivel:
+
+[options="header"] 
+.Atributos de nivel de la dimensión Promotion
+|===
+|Nivel |Nombre |Surrogate Key |Tipo de datos |Atributo
+
+|Total
+|Surrogate_Key
+|X
+|NUMERIC
+|TOTAL_SURROGATE_KEY
+
+|
+|Natural Key
+|-
+|VARCHAR(40)
+|TOTAL_NATURAL_KEY
+
+|
+|Name
+|-
+|VARCHAR(60)
+|TOTAL_NAME
+
+|Category
+|Surrogate_Key
+|X
+|NUMERIC
+|CATEGORY_SURROGATE_KEY
+
+|
+|Natural Key
+|-
+|VARCHAR(40)
+|CATEGORY_NATURAL_KEY
+
+|
+|Name
+|-
+|VARCHAR(60)
+|CATEGORY_NAME
+
+|Subcategory
+|Surrogate_Key
+|X
+|NUMERIC
+|SUBCATEGORY_SURROGATE_KEY
+
+|
+|Natural Key
+|-
+|VARCHAR(40)
+|SUBCATEGORY_NATURAL_KEY
+
+|
+|Name
+|-
+|VARCHAR(60)
+|SUBCATEGORY_NAME
+
+|Promotion
+|Surrogate_Key
+|X
+|NUMERIC
+|PROMOTION_SURROGATE_KEY
+
+|
+|Natural Key
+|-
+|VARCHAR(40)
+|PROMOTION_NATURAL_KEY
+
+|
+|Name
+|-
+|VARCHAR(60)
+|PROMOTION_NAME
+
+|===
+
+
+[cols="1,2,2,2", options="header"] 
+.Relaciones de nivel en la dimensión Promotion
+|===
+|Nivel
+|Natural Key Members
+|Parent References - Name
+|Parent References - Parent Level
+
+|Total
+|Natural_Key
+|-
+|-
+
+|Category
+|Natural_Key
+|Category_of_Total
+|Total
+
+|Subcategory
+|Natural_Key
+|Subcategory_of_category
+|Category
+
+|Promotion
+|Natural_Key
+|Promotion_od_subcategory
+|Subcategory
+
+|===
+
+=== Dimensión Canal
+
+image::DimensionCanal.png[Dimensión Canal y sus tablas base]
+
+[NOTE]
+====
+`CLASSES` actúa como una vista de tabla `CHANNELS` para poder usarla dos veces. La necesitamos para obtener las clases de los canales. Las clases se obtienen con `SELECT DISTINCT CLASS`.
+====
+
+[cols="1,2", options="header"] 
+.Niveles de la dimensión Channels
+|===
+|Nivel
+|Staging Datastore
+
+|Total
+|CHANNELS_TOTAL_STG
+
+|Class
+|CHANNELS_CLASS_STG
+
+|Channel
+|CHANNELS_CHANNEL_STG
+
+|===
+
+A continuación, definiremos los atributos de cada nivel:
+
+[options="header"] 
+.Atributos de nivel de la dimensión Channel
+|===
+|Nivel |Nombre |Surrogate Key |Tipo de datos |Atributo
+
+|Total
+|Surrogate_Key
+|X
+|NUMERIC
+|TOTAL_SURROGATE_KEY
+
+|
+|Natural Key
+|-
+|VARCHAR(40)
+|TOTAL_NATURAL_KEY
+
+|
+|Name
+|-
+|VARCHAR(60)
+|TOTAL_NAME
+
+|Class
+|Surrogate_Key
+|X
+|NUMERIC
+|CLASS_SURROGATE_KEY
+
+|
+|Natural Key
+|-
+|VARCHAR(40)
+|Class_NATURAL_KEY
+
+|
+|Name
+|-
+|VARCHAR(60)
+|Class_NAME
+
+|Channel
+|Surrogate_Key
+|X
+|NUMERIC
+|CHANNEL_SURROGATE_KEY
+
+|
+|Natural Key
+|-
+|VARCHAR(40)
+|CHANNEL_NATURAL_KEY
+
+|
+|Name
+|-
+|VARCHAR(60)
+|CHANNEL_NAME
+
+|===
+
+
+[cols="1,2,2,2", options="header"] 
+.Relaciones de nivel en la dimensión Channel
+|===
+|Nivel
+|Natural Key Members
+|Parent References - Name
+|Parent References - Parent Level
+
+|Total
+|Natural_Key
+|-
+|-
+
+|Class
+|Natural_Key
+|Class_of_Total
+|Total
+
+|Channel
+|Natural_Key
+|Channel_of_Class
+|Class
+
+|===
+
+|=== Dimensión Producto
+
+
+image::DimensionProducto.png[Dimensión Producto y sus tablas base]
+
+[NOTE]
+====
+`SUBCATEGORIES` actúa como una vista de tabla `CATEGORIES` para poder usarla dos veces. Usaremos las dos de forma separada para obtener las subcategorías y las categorías seǵun tengan o no un `CATEGORY_ID` superior. En las subcategorías `CATEGORY_ID IS NOT NULL`, mientras que en las categorías `CATEGORY_ID IS NULL`.
+====
+
+[cols="1,2", options="header"] 
+.Niveles de la dimensión Product
+|===
+|Nivel
+|Staging Datastore
+
+|Total
+|PRODUCTS_TOTAL_STG
+
+|Category
+|PRODUCTS_CATEGORY_STG
+
+|Subcategory
+|PRODUCTS_SUBCATEGORY_STG
+
+|Product
+|PRODUCTS_PRODUCT_STG
+|===
+
+A continuación, definiremos los atributos de cada nivel:
+
+[options="header"] 
+.Atributos de nivel de la dimensión Product
+|===
+|Nivel |Nombre |Surrogate Key |Tipo de datos |Atributo
+
+|Total
+|Surrogate_Key
+|X
+|NUMERIC
+|TOTAL_SURROGATE_KEY
+
+|
+|Natural Key
+|-
+|VARCHAR(40)
+|TOTAL_NATURAL_KEY
+
+|
+|Category
+|-
+|VARCHAR(60)
+|TOTAL_NAME
+
+|Category
+|Surrogate_Key
+|X
+|NUMERIC
+|CATEGORY_SURROGATE_KEY
+
+|
+|Natural Key
+|-
+|VARCHAR(40)
+|CATEGORY_NATURAL_KEY
+
+|
+|Name
+|-
+|VARCHAR(60)
+|CATEGORY_NAME
+
+|Subcategory
+|Surrogate_Key
+|X
+|NUMERIC
+|SUBCATEGORY_SURROGATE_KEY
+
+|
+|Natural Key
+|-
+|VARCHAR(40)
+|SUBCATEGORY_NATURAL_KEY
+
+|
+|Name
+|-
+|VARCHAR(60)
+|SUBCATEGORY_NAME
+
+|Product
+|Surrogate_Key
+|X
+|NUMERIC
+|PRODUCT_SURROGATE_KEY
+
+|
+|Natural Key
+|-
+|VARCHAR(40)
+|PRODUCT_NATURAL_KEY
+
+|
+|Name
+|-
+|VARCHAR(60)
+|PRODUCT_NAME
+
+|
+|Pack_Size
+|-
+|VARCHAR(30)
+|SUBCATEGORY_NAME
+
+|
+|List_Price
+|-
+|VARCHAR(30)
+|SUBCATEGORY_NAME
+|===
+
+
+[cols="1,2,2,2", options="header"] 
+.Relaciones de nivel en la dimensión Product
+|===
+|Nivel
+|Natural Key Members
+|Parent References - Name
+|Parent References - Parent Level
+
+|Total
+|Natural_Key
+|-
+|-
+
+|Category
+|Natural_Key
+|Category_of_Total
+|Total
+
+|Subcategory
+|Natural_Key
+|Subcategory_of_Category
+|Category
+
+|Product
+|Natural_Key
+|Product_of_Subcategory
+|Subcategory
+
+|===
+
+=== Creación de la dimensión Customer
 
 Vamos a crear la dimensión `Customer` a partir de la tabla `CUSTOMERS_TAB` del esquema `BI_SALES`.
+
+En primer lugar, cerraremos las conexiones existentes en ODI y estableceremos una nueva conexión al repositorio con Login Name `Cubes and Dimensions`. Se trata de un ejemplo preconfigurado en la máquina virtual de ODI.
 
 En la ficha `Designer` abrir el bloque `Dimensions and Cubes`.
 
@@ -807,6 +1238,19 @@ A continuación, establecer estos mappings:
 |`CUSTOMERS.EMAIL` | `Customer_Email`
 |`ADDRESSES.CITY_ID` | `REF_City_Natural_Key`
 |===
+
+== Creación de paquetes
+
+Con los paquetes podemos encadenar la ejecución de mappings. Además, permiten ejecutarlos de forma condicional en función de su ejecución satisfactoria o fallida.
+
+En nuestro caso el paquete ejecutará de forma secuencial los paquetes:
+
+* Mapping de la dimensión Promocion
+* Mappinc de la dimensión Canal
+* Mapping de la dimensión Producto
+* Mapping de la dimensión Cliente
+* Mapping de la dimensión Fecha
+* Mapping del cubo de ventas
 
 // NO CAMBIAR!! (Entrar en modo no numerado de apartados)
 :numbered!:
