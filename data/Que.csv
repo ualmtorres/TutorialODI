@@ -1,0 +1,61 @@
+id	producto	familia	seccion
+1	Agua mineral  - Lanjaron - 2 l.	Agua Mineral	Bebidas y Zumos
+2	Agua mineral - Lanjaron - tapon sport pack 6	Agua Mineral	Bebidas y Zumos
+3	Cerveza Bavaria 8.6 Pack 6	Cerveza	Bebidas y Zumos
+4	Cerveza Mahou Clasica Pack 12	Cerveza	Bebidas y Zumos
+5	Costa Bebida de Soja y Naranja 1 L	Zumos y nectares	Bebidas y Zumos
+6	Cerveza 1925 - Alhambra - pack de 6	Cerveza	Bebidas y Zumos
+7	Cerveza - Voll-Damm - 33 cl	Cerveza	Bebidas y Zumos
+8	Cerveza - Xibeca - 33 cl.	Cerveza	Bebidas y Zumos
+9	Cerveza - Alhambra - 33 CL	Cerveza	Bebidas y Zumos
+10	Cerveza - Alhambra - 50 CL	Cerveza	Bebidas y Zumos
+11	Leche Calcio entera - Puleva	Leche y preparados lacteos	Lacteos y huevos
+12	Leche Calcio desnatada - Puleva	Leche y preparados lacteos	Lacteos y huevos
+13	Bifidus liquido de avena y zanahoria - Puleva Omega3	Leche y preparados lacteos	Lacteos y huevos
+14	Leche semidesnatada - Central Lechera Asturiana	Leche y preparados lacteos	Lacteos y huevos
+15	Leche desnatada con vitaminas A y D - CL Asturiana	Leche y preparados lacteos	Lacteos y huevos
+16	Yogur desnatado Vegetanea - CL Asturiana	Leche y preparados lacteos	Lacteos y huevos
+17	Flan de huevo al baño Maria - Dhul	Postres diversos	Lacteos y huevos
+18	Flan de huevo Omega-3 - Dhul	Postres diversos	Lacteos y huevos
+19	Copa de crema de chocolate y nata - Danone	Postres diversos	Lacteos y huevos
+20	Arroz con leche al chocolate - Danone	Postres diversos	Lacteos y huevos
+21	Aceite de oliva virgen extra - Hojiblanca	Aceites y vinagres	Ultramarinos
+22	Aceite de oliva virgen extra - Almazara Real	Aceites y vinagres	Ultramarinos
+23	Aceite de oliva virgen extra, 0,4º - Hojiblanca	Aceites y vinagres	Ultramarinos
+24	Aceite de oliva virgen extra - Almazara Real - 5	Aceites y vinagres	Ultramarinos
+25	Vinagre balsamico de Modena - Borges	Aceites y vinagres	Ultramarinos
+26	Vinagre de manzana - Hojiblanca	Aceites y vinagres	Ultramarinos
+27	Mayonesa - Hellmann´s	Salsas, ketchup y mostazas	Ultramarinos
+28	Mayonesa sabor casero - Calve	Salsas, ketchup y mostazas	Ultramarinos
+29	Salsa fina extra ligera - Calve	Salsas, ketchup y mostazas	Ultramarinos
+30	Mostaza - Calve	Salsas, ketchup y mostazas	Ultramarinos
+31	Lentejas extra - El Hostal	Legumbres	Ultramarinos
+32	Lenteja pardina extra - Garrido	Legumbres	Ultramarinos
+33	Garbanzos extra - El Hostal	Legumbres	Ultramarinos
+34	Garbanzos gordos extra - La Salmantina	Legumbres	Ultramarinos
+35	Garbanzos - Luengo	Legumbres	Ultramarinos
+36	Alubia blanca riñon extra - La Salmantina	Legumbres	Ultramarinos
+37	Alubia blanca larga extra - Garrido	Legumbres	Ultramarinos
+38	Alubia blanca larga extra - El Hostal	Legumbres	Ultramarinos
+39	Alubia blanca - Luengo	Legumbres	Ultramarinos
+40	Azucar moreno de caña - Azucarera Española	Azucar y sal	Ultramarinos
+41	Azucar blanco - Azucarera Española	Azucar y sal	Ultramarinos
+42	Sal marina natural - Sal Costa	Azucar y sal	Ultramarinos
+43	Sal hiposodica - Sal Costa	Azucar y sal	Ultramarinos
+44	Tallarin - Gallo	Pastas	Ultramarinos
+45	Tallarines - Ardilla	Pastas	Ultramarinos
+46	Spaghetti - Ardilla	Pastas	Ultramarinos
+47	Spaghetti con fibra - Ardilla	Pastas	Ultramarinos
+48	Spaghetti al huevo - Gallo	Pastas	Ultramarinos
+49	Limpia cristales - Cristasol	Limpiadores del hogar	Drogueria y Limpieza
+50	Limpia cristales con amoniaco - Tenn	Limpiadores del hogar	Drogueria y Limpieza
+51	Lejia amarilla - Conejo	Limpiadores del hogar	Drogueria y Limpieza
+52	Detergente liquido a mano - Ariel	Detergentes para la ropa	Drogueria y Limpieza
+53	Detergente en polvo - Ariel	Detergentes para la ropa	Drogueria y Limpieza
+54	Detergente en polvo - Colon	Detergentes para la ropa	Drogueria y Limpieza
+55	Papel de cocina reutilizable - Colhogar	Articulos de celulosa	Drogueria y Limpieza
+56	Papel higienico - Colhogar Dermia Plus	Articulos de celulosa	Drogueria y Limpieza
+57	Papel higienico - Scottex	Articulos de celulosa	Drogueria y Limpieza
+58	Vino tinto - Marques de Buxarra	Vino tinto	Vinos y licores
+59	Vino tinto D.O.C. Rioja Joven - Romeral	Vino tinto	Vinos y licores
+60	Vino tinto D.O. Cataluña Joven - Conde de Caralt	Vino tinto	Vinos y licores
