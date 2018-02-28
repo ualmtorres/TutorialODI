@@ -1,0 +1,886 @@
+////
+NO CAMBIAR!!
+Codificación, idioma, tabla de contenidos, tipo de documento
+////
+:encoding: utf-8
+:lang: es
+:toc: right
+:toc-title: Tabla de contenidos
+:doctype: book
+:imagesdir: ./images
+
+
+
+
+////
+Nombre y título del trabajo
+////
+# Introducción al uso de Oracle Data Integrator
+Almacenes de datos y Sistemas OLAP. Máster en Desarrollo de Software. UGR
+Manuel Torres <mtorres@ual.es>
+
+
+// NO CAMBIAR!! (Entrar en modo no numerado de apartados)
+:numbered!: 
+
+
+[abstract]
+== Resumen
+
+En este tutorial se introduce Oracle Data Integrator (ODI), la solución de Oracle para la construcción, despliegue y administración de almacenes de datos y para entornos de Business Intelligence. Se describe la arquitectura y principales componentes de ODI y se describe de forma concisa los pasos para la creación del repositorio ODI, la importación de archivos de texto y la creación de dimensiones y cubos.
+
+
+.Objetivos
+
+* Conocer la arquitectura de ODI.
+* Aprender a crear un repositorio Master y repositorios de trabajo.
+* Aprender a importar archivos de texto mediante ODI.
+* Aprender a crear dimensiones y cubos mediante ODI.
+
+[NOTE]
+====
+Este tutorial está basado en la documentación oficial de Oracle Data Integrator disponible en https://docs.oracle.com/middleware/12212/odi/index.html
+====
+
+// Entrar en modo numerado de apartados
+:numbered:
+
+
+== Introducción a Oracle Data Integrator (ODI)
+
+ODI ofrece una solución unificada para la construcción, despliegue y administración de almacenes de datos y para entornos de Business Intelligence. Además, combina todos los elementos de la integración de datos (movimiento, sincronización, calidad, administración y servicios de datos) para asegurar que la información esté disponible de forma precisa y consistente en sistemas complejos.
+
+image::ODIArchitecture.png[title = "Arquitectura de ODI"]
+
+El componente principal de la arquitectura ODI es el repositorio. El repositorio de ODI almacena información de configuración relacionada con metadatos de la aplicación, proyectos, escenarios y logs de ejecución. Es posible contar con varias instancias del repositorio, lo que permite tener entornos separados. Además, el repositorio actúa como un sistema de control de versiones a través de un número de versión para los objetos creados. El repositorio de ODI lo instalaremos en una base de datos Oracle.
+
+=== El repositorio Máster y los repositorios de trabajo
+
+El repositorio ODI está formado por un repositorio Master y varios repositorios de trabajo.
+
+El repositorio Master almacena:
+
+* Información de seguridad, como usuarios, perfiles y privilegios.
+* Información sobre tecnologías, servidores, esquemas e idiomas.
+* Objetos versionados y archivados.
+
+Los repositorios de trabajo almacenan:
+
+* Modelos, que incluyen la definición de esquemas, datastores, definiciones de campos y atributos, restricciones de calidad de datos, y demás.
+* Proyectos, que incluyen reglas de negocio, paquetes, procedimientos, módulos de conocimiento (funcionalidad), y demás.
+* Resultados sobre la ejecución de escenarios.
+
+=== Los navegadores de ODI
+
+Las operaciones que realizamos con ODI las hacemos a través de cuatro navegadores: Topology, Designer, Operator y Security.
+
+* En Topology definiremos la arquitectura física y lógica indicando las tecnologías que usan las fuentes y destinos de los datos que vamos a usar (p.e. archivos de texto, bases de datos Oracle, otras bases de datos relacionales (MySQL, PostgreSQL, SQL Server, ...), bases de datos NoSQL (MongoDB, Cassandra, ...) y el ecosistema Hadoop (HDFS, HBase, Hive, Pig, Spark, ...)
+
+* En Designer crearemos los proyectos (que incluirán los mappings y los paquetes para ejecutar los mappings) y configuraremos los modelos (fuentes de datos) y los cubos y dimensiones de destino.
+
+* En Operator podemos ver el resultado de la ejecución de los mappings y paquetes.
+
+* En Security gestionamos la información de seguridad de ODI relacionada con usuarios, perfiles y privilegios de los usuarios.
+
+image::ODIInAction.gif[title = "Caso de uso de ODI mostrando la función de los módulos de conocimiento"]
+
+[NOTE]
+====
+Las pruebas para llevar a cabo este tutorial las realizaremos con la http://www.oracle.com/technetwork/middleware/data-integrator/odi-demo-2032565.html[máquina virtual configurada que ofrece Oracle para ODI 12c].
+
+En el http://www.oracle.com/technetwork/middleware/data-integrator/downloads/odi-12c-getstart-vm-install-guide-2401840.pdf[documento de instalación y uso de la máquina virtual] se encuentran los detalles sobre la configuración y puesta en marcha de la máquina virtual, así como las contraseñas de todos los usuarios.
+
+Las contraseñas básicas que usaremos serán `oracle` para las cuentas de administrador y `welcome1` para la de wallet.
+====
+
+== Creación de los esquemas de usuario para el repositorio Master y los repositorios de trabajo
+
+Desde SQL Developer, como usuario `system` ejecutamos:
+
+//// 
+COLOCA A CONTINUACION EL CONTENIDO DEL APARTADO
+////
+
+[source,sql]
+----
+CREATE USER granadam IDENTIFIED BY granada <1>
+DEFAULT TABLESPACE users TEMPORARY TABLESPACE temp;
+
+GRANT CONNECT, RESOURCE TO granadam;
+
+CREATE USER granadaw IDENTIFIED BY granada <2>
+DEFAULT TABLESPACE users TEMPORARY TABLESPACE temp;
+
+GRANT CONNECT, RESOURCE TO granadaw;
+----
+<1> El usuario `granadam` hace referencia al usuario `granada` Master.
+<1> El usuario `granadaw` hace referencia al usuario `granada` Worker.
+
+
+=== Creación del repositorio Master
+
+En ODI, seleccionamos _File - New_. Aparecerá un cuadro de diálogo en el que seleccionaremos _Create a New Master Repository_.
+
+image::createNewMasterRepository.png[title = "Cuadro de diálogo para la creación de un nuevo repositorio Master"]
+
+En el cuadro de diálogo introducimos los valores siguientes:
+
+[cols="1,2", options="header"] 
+.Valores para la conexión al esquema de usuario del repositorio Máster
+|===
+|Parámetro
+|Valor
+
+|JDBC URL
+|`jdbc:oracle:thin:@localhost:1521/orcl`
+
+|User
+|granadam
+
+|Password
+|granada
+
+|DBA User
+|system
+
+|DBA Password
+|oracle
+
+|===
+
+image::AsistenteMaster1.png[title = "Configuración de la conexión al esquema de usuario del repositorio Master"]
+
+En el paso siguiente del asistente tenemos que introducir los valores de conexión que queremos usar para el usuario SUPERVISOR.
+
+[cols="1,2", options="header"] 
+.Valores para la conexión al esquema de usuario del repositorio Máster
+|===
+|Parámetro
+|Valor
+
+|Supervisor Password
+|granada
+
+|Confirm Password
+|granada
+|===
+
+image::AsistenteMaster2.png[title = "Configuración del supervisor para la conexión al repositorio Master"]
+
+=== Conexión al repositorio Master
+
+En ODI, seleccionamos _File - New_. Aparecerá un cuadro de diálogo en el que seleccionaremos _Create a New ODI Repository Login_.
+
+image::createNewRepositoryLogin.png[title = "Creación del login al repositorio"]
+
+Aparecerá un cuadro de diálogo pidiéndonos la contraseña de wallet para tener acceso a nuestras credenciales. En la máquina virtual proporcionada por Oracle el password es `welcome1`.
+
+image::walletPassword.png[title = "Introducción del password `welcome1`"]
+
+[cols="1,2", options="header"] 
+.Valores para la conexión al repositorio
+|===
+|Parámetro
+|Valor
+
+|Login name
+|Master Repository
+
+|User
+|SUPERVISOR
+
+|Password
+|granada
+
+|User
+|granadam
+
+|Password
+|granada
+
+|Driver List
+|Oracle JDBC Driver
+
+|Driver Name
+|oracle.jdbc.OracleDriver
+
+|URL
+|`jdbc:oracle:thin:@localhost:1521/orcl`
+|===
+
+
+image::InformacionConexionRepositorio.png[title = "Información de conexión al repositorio"]
+
+=== Creación del repositorio de trabajo
+
+image::ODILogin.png[title = "Selección de la conexión al repositorio Master"]
+
+image::NewWorkRepository.png[title = "Creación de un repositorio de trabajo"]
+
+Aparecerá el cuadro de diálogo de creación del repositorio de trabajo con los valores recuperados de la conexión creada anteriormente.
+
+image::AsistenteWork1.png[title = "Valores de conexión al repositorio de trabajo"]
+
+En el paso siguiente especificaremos el nombre que le queremos dar al repositorio de trabajo y el password de acceso. El nombre del repositorio de trabajo será `WORKREP1` y el password será `granada`.
+
+image::AsistenteWork2.png[title = "Configuración del repositorio de trabajo"]
+
+Aparecerá un cuadro de diálogo para que indiquemos si queremos crear un login al repositorio de trabajo. Indicaremos que sí e introduciremos `WORKREP1`, que es el nombre que dimos anteriormente al repositorio de trabajo.
+
+Una vez creado el repositorio de trabajo, nos desconectaremos del repositorio creado seleccionando `ODI - Disconnect Master Repository`.
+
+A continuación, nos conectaremos al repositorio de trabajo con el login `WORKREP1`, el usuario `SUPERVISOR` y la contraseña `granada`.
+
+image::ConexionRepositorioTrabajo.png[title = "Creación de un repositorio de trabajo"]
+
+== Importación de archivos de texto
+
+Para importar archivos de texto utilizaremos un ejemplo reducido de Ventas con las dimensiones Cuando, Donde y Que.
+
+image::EsquemaVentas.png[title = "Esquema de Ventas"]
+
+Las tablas siguientes muestran la estructura de los archivos de texto:
+
+
+.Estructura de la tabla Cuando
+[options="header"]
+|===
+|Columna | Tipo de datos
+|id | NUMBER
+|diaMes | NUMBER
+|diaSemana | VARCHAR2(20)
+|mesNombre | VARCHAR2(20)
+|mesNumero | NUMBER
+|anio | NUMBER
+|===
+
+.Estructura de la tabla Donde
+[options="header"]
+|===
+|Columna | Tipo de datos
+|id | NUMBER
+|tienda | VARCHAR2(30)
+|poblacion | VARCHAR2(30)
+|provincia | VARCHAR2(20)
+|comunidadAutonoma | VARCHAR2(20)
+|===
+
+.Estructura de la tabla Que
+[options="header"]
+|===
+|Columna | Tipo de datos
+|id | NUMBER
+|producto | VARCHAR2(60)
+|familia | VARCHAR2(30)
+|seccion | VARCHAR2(20)
+|===
+
+.Estructura de la tabla Venta
+[options="header"]
+|===
+|Columna | Tipo de datos
+|idCuando | NUMBER
+|idQue | NUMBER
+|idDonde | NUMBER
+|unidades | NUMBER
+|clientes | NUMBER
+|===
+
+En el Anexo se muestra el código SQL para la creación de las tablas.
+
+=== Pasos para la importación de archivos de texto en ODI
+
+. Definir la arquitectura física de origen. En este paso definimos la ruta en la que se almacenan los archivos de texto que vamos a importar.
+    .. Topology -> Physical Architecture -> Technologies -> File. Clic derecho sobre `FILE_GENERIC` y elegir Open.
+    .. Host: `localhost`, User: `oracle`, Password: `oracle`.
+    .. Probar conexión
+    .. Topology -> Physical Architecture -> Technologies -> FILE_GENERIC. Clic derecho y elegir New Physical Schema
+    .. Directory (Schema) y Directory (Work Schema): `/home/mtorres/Documents/UGR2018/data`
+. Definir la arquitectura lógica de origen. En este paso asignamos un nombre a la ruta en la que se almacenan los archivos de texto a importar.
+    .. Topology -> Logical Architecture -> Technologies -> File. Clic derecho y elegir New Logical Schema
+    .. Name: `MyFlatFiles`, Physical schema listbox: `FILE_GENERIC ... /UGR2018/data`.
+. Definir el modelo de la fuente. En este paso crearemos el _data store_ asociado al archivo de texto. Para ello, se obtendrá la estructura del archivo de texto a importar.
+    .. Designer -> Models -> New Model Folder.
+    .. Name: `FlatFilesVentas`
+    .. Designer -> Models -> FlatFilesVentas. Clic derecho y seleccionar New Model.
+    .. Name: `FFVentas`, Technology: `File`, Logical Schema: `MyFlatFiles`.
+    .. Designer -> Models -> FlatFilesVentas -> FFVentas. Clic derecho y seleccionar New Datastore
+    .. Elegir nombre para el archivo, seleccionar el archivo de texto, marcar si es delimitado, indicar si hay fila de encabezado, indicar si los separadores de registro y de campo son MS-DOS o Unix, obtener una vista previa de los datos.
+. Crear la definición de la tabla de destino. `CREATE TABLE ...`.
+. Definir la arquitectura física de destino. En este paso especificamos la instancia de Oracle en la que se almacenará la importación de los datos.
+    .. Topology -> Physical Architecture -> Oracle. Clic derecho y seleccionar New Data Server
+    .. Name: `DB-HR`, Instance: `orcl`, User: `granadam`, Password: `granada`.
+    .. JDBC Driver: oracle.jdbc.OracleDriver, JDBC Url: `jdbc:oracle:thin:@localhost:1521/orcl`
+    .. Probar conexión
+    .. Topology -> Physical Architecture -> Oracle -> DB-HR -> New Physical Schema
+    .. Schema (Schema), Schema (Work Schema): `granadam`
+. Definir la arquitectura lógica de destino. En este paso asignamos un nombre al esquema en el que estará la tabla de destino de la importación.
+    .. Topology -> Logical Architecture -> Oracle. Clic derecho y elegir New Logical Schema
+    .. Name: `DBVentas`, Physical schema listbox: `DBVentas.granadam`.
+. Definir el modelo del destino. En este paso se crea un grupo en ODI que representa el esquema Oracle en el que estará la tabla de destino.
+    .. Designer -> Models -> New Model.
+    .. Name: `DBVentas`, Technology: `Oracle`, Logical schema: `DBVentas`.
+    .. Reverse Engineer -> Reverse Engineer.
+    .. Designer -> Models -> DB-HR -> View Data.
+. Preparar el mapping. En este paso se importan los módulos (plugins) necesarios para la importación y definir el mapping.
+    .. Designer -> Projects -> New Project
+    .. Name: Ventas
+    .. Import Knowledge modules 
+        ... Designer -> Projects -> Ventas -> Knowledge modules. Clic derecho y seleccionar Import knowledge modules.
+        ... File Import Directory. Buscar
+        ... File Name: `/u01/Middleware/ODI12c/odi/sdk/xml-reference`
+        ... Seleccionar IKM SQL Incremental Update y LKM File to SQL.
+    .. Designer -> Projects -> Ventas -> First Folder -> Mappings. Clic derecho y seleccionar New Mapping
+    .. Name: `MappingCuando`
+    .. Colocar archivo de origen y tabla de destino y crear mapping de los atributos.
+    .. Seleccionar tabla de destino. Logical tab -> Target. Integration Type: `Incremental Update`
+    .. Physical tab. Loading Knowledge Module: `LKM SQL to SQL`.
+. Validar y ejecutar el mapping
+. En Operations -> Session List -> Sessions se puede ver el estado de la ejecución del mapping.
+    
+== Creación de una dimensión
+
+Vamos a crear la dimensión `Customer` a partir de la tabla `CUSTOMERS_TAB` del esquema `BI_SALES`.
+
+En la ficha `Designer` abrir el bloque `Dimensions and Cubes`.
+
+=== Definición del datastore y la secuencia para las claves generadas
+
+Especificar los valores siguientes en la ficha `Definition`
+
+[cols="1,2,2", options="header"] 
+.Valores para la conexión al esquema de usuario del repositorio Máster
+|===
+|Name
+|Datastore
+|Surrogate Key Sequence
+
+|Customer
+|BI_SALES - CUSTOMERS_TAB
+|CUSTOMERS_SEQ
+|===
+
+=== Definición de los niveles de las jerarquías
+
+Seleccionar la ficha `Levels`.
+
+En primer lugar definiremos los niveles de la dimensión:
+
+* Total
+* Region
+* Subregion
+* Country
+* Province
+* City
+* Customer
+
+[cols="1,2", options="header"] 
+.Niveles de la dimensión Customer
+|===
+|Nivel
+|Staging Datastore
+
+|Total
+|CUSTOMERS_TOTAL_STG
+
+|Region
+|CUSTOMERS_REGION_STG
+
+|Subregion
+|CUSTOMERS_SUBREGION_STG
+
+|Country
+|CUSTOMERS_COUNTRY_STG
+
+|Province
+|CUSTOMERS_PROVINCE_STG
+
+|City
+|CUSTOMERS_CITY_STG
+
+|Customer
+|CUSTOMERS_CUSTOMER_STG
+|===
+
+
+A continuación, definiremos los atributos de cada nivel:
+
+[options="header"] 
+.Atributos de nivel de la dimensión Customer
+|===
+|Nivel |Nombre |Surrogate Key |Tipo de datos |Atributo
+
+|Total
+|Surrogate_Key
+|X
+|NUMERIC
+|TOTAL_SURROGATE_KEY
+
+|
+|Natural Key
+|-
+|VARCHAR(40)
+|TOTAL_NATURAL_KEY
+
+|
+|Name
+|-
+|VARCHAR(65)
+|TOTAL_NAME
+
+|Region
+|Surrogate_Key
+|X
+|NUMERIC
+|REGION_SURROGATE_KEY
+
+|
+|Natural Key
+|-
+|VARCHAR(40)
+|REGION_NATURAL_KEY
+
+|
+|Name
+|-
+|VARCHAR(65)
+|REGION_NAME
+
+|Subregion
+|Surrogate_Key
+|X
+|NUMERIC
+|SUBREGION_SURROGATE_KEY
+
+|
+|Natural Key
+|-
+|VARCHAR(40)
+|SUBREGION_NATURAL_KEY
+
+|
+|Name
+|-
+|VARCHAR(65)
+|SUBREGION_NAME
+
+|Country
+|Surrogate_Key
+|X
+|NUMERIC
+|COUNTRY_SURROGATE_KEY
+
+|
+|Natural Key
+|-
+|VARCHAR(40)
+|COUNTRY_NATURAL_KEY
+
+|
+|Name
+|-
+|VARCHAR(65)
+|COUNTRY_NAME
+
+|
+|ISO
+|-
+|VARCHAR(2)
+|COUNTRY_ISO
+
+|Province
+|Surrogate_Key
+|X
+|NUMERIC
+|PROVINCE_SURROGATE_KEY
+
+|
+|Natural Key
+|-
+|VARCHAR(40)
+|PROVINCE_NATURAL_KEY
+
+|
+|Name
+|-
+|VARCHAR(65)
+|PROVINCE_NAME
+
+|City
+|Surrogate_Key
+|X
+|NUMERIC
+|CITY_SURROGATE_KEY
+
+|
+|Natural Key
+|-
+|VARCHAR(40)
+|CITY_NATURAL_KEY
+
+|
+|Name
+|-
+|VARCHAR(65)
+|CITY_NAME
+
+|Customer
+|Surrogate_Key
+|X
+|NUMERIC
+|CUSTOMER_SURROGATE_KEY
+
+|
+|Natural Key
+|-
+|VARCHAR(40)
+|CUSTOMER_NATURAL_KEY
+
+|
+|Name
+|-
+|VARCHAR(65)
+|CUSTOMER_NAME
+
+|
+|Gender
+|-
+|VARCHAR(10)
+|CUSTOMER_GENDER
+
+|
+|Street_Address
+|-
+|VARCHAR(40)
+|CUSTOMER_STREET_ADDRESS
+
+|
+|Postal_Code
+|-
+|VARCHAR(10)
+|CUSTOMER_POSTAL_CODE
+
+|
+|Phone_Number
+|-
+|VARCHAR(25)
+|CUSTOMER_PHONE_NUMBER
+
+|
+|Email
+|-
+|VARCHAR(30)
+|CUSTOMER_EMAIL
+|===
+
+
+[cols="1,2,2,2", options="header"] 
+.Relaciones de nivel en la dimensión Customer
+|===
+|Nivel
+|Natural Key Members
+|Parent References - Name
+|Parent References - Parent Level
+
+|Total
+|Natural_Key
+|-
+|-
+
+|Region
+|Natural_Key
+|Region_of_Total
+|Total
+
+|Subregion
+|Natural_Key
+|Subregion_of_Region
+|Region
+
+|Country
+|Natural_Key
+|Country_of_Subregion
+|Subregion
+
+|Province
+|Natural_Key
+|Province_of_Country
+|Country
+
+|City
+|Natural_Key
+|City_of_Province
+|Province
+
+|Customer
+|Natural_Key
+|Customer_of_City
+|City
+
+|===
+
+=== Definición de las jerarquías
+
+Definir una jerarquía denominada `CUSTOMERS_STD_HIER` con los niveles siguientes y marcarla como jerarquía predeterminada.
+
+* Total
+* Region
+* Subregion
+* Country
+* Province
+* City
+* Customer
+
+== Creación de un cubo
+
+Crearemos un cubo denominado `Sales` basado en el datastore `SALES_TAB`.
+
+En la ficha `Details` definiremos las dimensiones indicando el nivel con el que se relacionan con el cubo de acuerdo con la tabla siguiente:
+
+[options="header"] 
+.Correspondencia de las dimensiones con el cubo
+|===
+| Nivel de dimensión | Key Binding Attribute
+
+|Times.Day
+|TIMES
+
+|Channels.Channel
+|CHANNELS
+
+|Customers.Customer
+|CUSTOMERS
+
+|Products.Product
+|PRODUCTS
+
+|Promotions.Promotion
+|PROMOTIONS
+|===
+
+
+Las medidas del cubon son:
+
+[options="header"] 
+.Medidas del cubo
+|===
+| Nombre | Tipo de datos | Atributo | Atributo de error
+
+|Amount
+|NUMERIC(10,2)
+|AMOUNT
+|AMOUNT
+
+|Cost
+|NUMERIC(10,2)
+|COST
+|COST
+
+|Quantity
+|NUMERIC
+|QUANTITY
+|QUANTITY
+
+|===
+
+
+== Creación de mappings
+
+En la ficha `Projects`, expandir el proyecto `OBE, Cubes and Dimensions` y hacer clic con el botón derecho en `Mappings` para seleccionar `New Mapping`. Introducir `Load Customers Dimension`.
+
+La dimensión Customer la vamos a cargar con los datos de las tablas siguientes del esquema `BI_WEEK`.
+
+* ADDRESSES
+* CITIES
+* COUNTRIES
+* CUSTOMERS
+* REGIONS
+
+=== Obtener sólo las provincias
+
+A partir de la tabla `CITIES` podemos obtener las provincias con sus países con 
+
+[source]
+----
+SELECT DISTINCT STATE_PROVINCE, COUNTRY_ISO_CODE
+FROM CITIES;
+----
+
+image::Provinces.png[Con la tabla `CITIES` podemos obtener las ciudades y sus países]
+
+Crear un componente `DISTINCT` en la zona de mappings incluyendo sólo las columnas `STATE_PROVINCE, COUNTRY_ISO_CODE`. Renombrar el componente como `PROVS_ONLY`.
+
+Crear el siguiente mapping:
+
+
+|===
+| Origen | Destino
+
+|CITIES.STATE_PROVINCE | PROVS_ONLY.STATE_PROVINCE
+|CITIES.COUNTRY_ISO_CODE | PROVS_ONLY.COUNTRY_ISO_CODE
+|===
+
+=== Creación de joins
+
+Crearemos los siguientes joins mediante componentes `JOIN` en la zona de mappings:
+
+* `COUNTRIES.ISO_CODE = PROVS_ONLY.COUNTRY_ISO_CODE`
+* `CUSTOMERS.ID = ADDRESSES.CUSTOMER_ID`
+
+=== Obtener las regiones y las subregiones
+
+Si analizamos el contenido de la tabla `REGIONS`, observamos que las regiones son las que `REGION_ID IS NULL`, mientras que las subregiones son las que `REGION_ID IS NOT NULL`.
+
+image::Regions.png[]
+
+Crearemos dos componentes `FILTER` en la zona de mappings para obtener sólo las regiones y las subregiones, respectivamente.
+
+[cols = "1,2,1", options="header"]
+|===
+| Filtro | Condición de filtrado | Origen
+| `SUBREG_ONLY` | `REGIONS.REGION_ID IS NOT NULL` | `REGIONS`
+| `REG_ONLY` | `REGIONS.REGION_ID IS NULL` | `REGIONS`
+|===
+
+=== Crear los mappings entre atributos
+
+Crear un componente `EXPRESSION` en la zona de mappings añadiéndole un atributo `TOTAL_NAME` con estas propiedades:
+
+* Tipo de datos: `VARCHAR(20)`
+* Expresión: `'Customers Total'`
+
+A continuación, establecer estos mappings:
+
+[options="header"]
+|===
+| Origen | Destino en dimensión `Customers`
+|`EXPRESSION.TOTAL_NAME` | `Total_Natural_Key`
+|`EXPRESSION.TOTAL_NAME` | `Total_Name`
+|`REGIONS.ID` | `Region_Natural_Key` vía `REGIONS@REG_ONLY`
+|`REGIONS.NAME`| `Region_Name`
+|- |Cambiar la expresión de `REF_Total_Natural_Key` por el valor `'Customers_Total'`
+|`REGIONS.ID` | `Subregion_Natural_Key` vía `REGIONS@SUBREG_ONLY`
+|`REGIONS.NAME`| `SubRegion_Name`
+|`REGIONS.REGION_ID` | `REF_Region_Natural_Key`
+|`COUNTRIES.ID` | `Country_Natural_Key`
+|`COUNTRIES.NAME` | `Country_Name`
+|`COUNTRIES.ISO_CODE` | `Country_ISO`
+|`COUNTRIES.REGION_ID` | `REF_SubRegion_Natural_Key`
+|`PROVS_ONLY.STATE_PROVINCE` | `Province_Natural_Key`
+|`PROVS_ONLY.STATE_PROVINCE` | `Province_Name`
+|`COUNTRIES.ID` | `REF_Country_Natural_Key`
+|`CITIES.ID` | `City_Natural_Key`
+|`CITIES.NAME` | `City_Name`
+|`CITIES.STATE_PROVINCE` | `REF_Province_Natural_Key`
+|`CUSTOMERS.ID` | `Customer_Natural_Key`
+|`CUSTOMERS.NAME` | `Customer_Name`
+|`CUSTOMERS.GENDER` | `Customer_Gender`
+|`ADDRESSES.CUST_STREET_ADDRESS` | `Customer_Street_Address`
+|`ADDRESSES.CUST_POSTAL_CODE` | `Customer_Postal_Code`
+|`ADDRESSES.PHONE_NUMBER` | `Customer_Phone_Number`
+|`CUSTOMERS.EMAIL` | `Customer_Email`
+|`ADDRESSES.CITY_ID` | `REF_City_Natural_Key`
+|===
+
+// NO CAMBIAR!! (Entrar en modo no numerado de apartados)
+:numbered!:
+
+== Anexo 1. Scripts para crear las tablas del ejemplo Venta
+
+[source]
+----
+CREATE TABLE granadam.Cuando (
+idCuando NUMBER(12), 
+diaMes NUMBER(12), 
+diaSemana VARCHAR2(20), 
+mesNombre VARCHAR2(20),
+mesNumero NUMBER(12),
+anio NUMBER(12), 
+PRIMARY KEY(idCuando)
+);
+
+DESCRIBE granadam.Cuando;
+
+SELECT * FROM granadam.Cuando;
+
+CREATE TABLE granadam.Donde (
+idDonde NUMBER(12), 
+tienda VARCHAR2(30), 
+poblacion VARCHAR2(30), 
+provincia VARCHAR2(20),
+comunidadAutonoma VARCHAR2 (20), 
+PRIMARY KEY(idDonde)
+);
+
+SELECT * FROM granadam.Donde;
+
+describe granadam.Donde;
+
+CREATE TABLE granadam.Que (
+idQue NUMBER(12), 
+producto VARCHAR2(60), 
+familia VARCHAR2(30), 
+seccion VARCHAR2(20),
+PRIMARY KEY(idQue)
+);
+
+SELECT * FROM granadam.Que;
+
+describe granadam.Que;
+
+CREATE TABLE granadam.Venta (
+idCuando NUMERIC(12),
+idQue NUMERIC(12),
+idDonde NUMERIC(12),
+unidades NUMERIC(12),
+clientes NUMERIC(12),
+PRIMARY KEY(idCuando, idQue, idDonde)
+);
+
+SELECT * FROM granadam.Venta;
+
+describe granadam.Venta;
+----
+
+== Anexo 2. Consultas ROLLUP Y CUBE
+
+[source]
+----
+SELECT diaSemana, familia, SUM(unidades)
+FROM Venta, Cuando, Que
+WHERE Venta.idCuando = Cuando.idCuando AND
+Venta.idQue = Que.idQue
+GROUP BY ROLLUP(diaSemana, familia);
+
+SELECT diaSemana, familia, SUM(unidades)
+FROM Venta, Cuando, Que
+WHERE Venta.idCuando = Cuando.idCuando AND
+Venta.idQue = Que.idQue
+GROUP BY CUBE(diaSemana, familia);
+
+SELECT diaSemana, familia, SUM(unidades),
+GROUPING(diaSemana) as d, GROUPING(familia) as f
+FROM Venta, Cuando, Que
+WHERE Venta.idCuando = Cuando.idCuando AND
+Venta.idQue = Que.idQue
+GROUP BY ROLLUP(diaSemana, familia);
+
+SELECT 
+DECODE(GROUPING(diaSemana), 1, 'Todos los dias', diaSemana) AS diaSemana,
+DECODE(GROUPING(familia), 1, 'Todas las familias', familia) AS familia,
+SUM(unidades)
+FROM Venta, Cuando, Que
+WHERE Venta.idCuando = Cuando.idCuando AND
+Venta.idQue = Que.idQue
+GROUP BY CUBE(diaSemana, familia);
+----
+
+
+[bibliography]
+== Referencias
+
+[bibliography]
+- Oracle Data Integrator 12.2.1.2.0. https://docs.oracle.com/middleware/12212/odi/index.html
+- ODI11g: Creating and Connecting to ODI Master and Work Repositories. http://www.oracle.com/webfolder/technetwork/tutorials/obe/fmw/odi/odi_11g/odi_master_work_repos/odi_master_work_repos.htm?print=preview&imgs=visible. 
+- ODI 12c - File to Table. http://www.oracle.com/webfolder/technetwork/tutorials/obe/fmw/odi/odi_12c/odi12c_exp_flat_2_tbl/odi12c_exp_flat_2_tbl.html
+- Oracle Data Integrator 12.2.1: Creating Cubes and Dimensions. http://www.oracle.com/webfolder/technetwork/tutorials/obe/fmw/odi/odi_12c/odi_12.2.1.1/Cube_Dimensions/cube_dimensions.html#overview
