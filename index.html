@@ -6,7 +6,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="generator" content="Asciidoctor 1.5.5.dev">
 <meta name="author" content="Almacenes de datos y Sistemas OLAP. Máster en Desarrollo de Software. UGR">
-<title>ODI - Creación y conexión a los repositorios máster y de trabajo</title>
+<title>Introducción al uso de Oracle Data Integrator</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
 <style>
 /* Asciidoctor default stylesheet | MIT License | http://asciidoctor.org */
@@ -421,7 +421,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </head>
 <body class="book toc2 toc-right">
 <div id="header">
-<h1>ODI - Creación y conexión a los repositorios máster y de trabajo</h1>
+<h1>Introducción al uso de Oracle Data Integrator</h1>
 <div class="details">
 <span id="author" class="author">Almacenes de datos y Sistemas OLAP. Máster en Desarrollo de Software. UGR</span><br>
 <span id="revdate">Manuel Torres &lt;mtorres@ual.es&gt;</span>
@@ -446,6 +446,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#trueimportaci-n-de-archivos-de-texto">3. Importación de archivos de texto</a>
 <ul class="sectlevel2">
 <li><a href="#truepasos-para-la-importaci-n-de-archivos-de-texto-en-odi">3.1. Pasos para la importación de archivos de texto en ODI</a></li>
+<li><a href="#trueimportaci-n-de-los-archivos-de-texto">3.2. Importación de los archivos de texto</a></li>
 </ul>
 </li>
 <li><a href="#truecreaci-n-de-una-dimensi-n">4. Creación de una dimensión</a>
@@ -574,7 +575,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <p>En Topology definiremos la arquitectura física y lógica indicando las tecnologías que usan las fuentes y destinos de los datos que vamos a usar (p.e. archivos de texto, bases de datos Oracle, otras bases de datos relacionales (MySQL, PostgreSQL, SQL Server, &#8230;&#8203;), bases de datos NoSQL (MongoDB, Cassandra, &#8230;&#8203;) y el ecosistema Hadoop (HDFS, HBase, Hive, Pig, Spark, &#8230;&#8203;)</p>
 </li>
 <li>
-<p>En Designer crearemos los proyectos (que incluirán los mappings y los paquetes para ejecutar los mappings) y configuraremos los modelos (fuentes de datos) y los cubos y dimensiones de destino.</p>
+<p>En Designer crearemos los proyectos (que incluirán los mappings y los paquetes para ejecutar los mappings) y configuraremos los modelos (fuentes de datos y destinos de datos) y los cubos y dimensiones de destino.</p>
 </li>
 <li>
 <p>En Operator podemos ver el resultado de la ejecución de los mappings y paquetes.</p>
@@ -590,6 +591,26 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 <div class="title">Figure 2. Caso de uso de ODI mostrando la función de los módulos de conocimiento</div>
 </div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>Las pruebas para llevar a cabo este tutorial las realizaremos con la <a href="http://www.oracle.com/technetwork/middleware/data-integrator/odi-demo-2032565.html">máquina virtual configurada que ofrece Oracle para ODI 12c</a>.</p>
+</div>
+<div class="paragraph">
+<p>En el <a href="http://www.oracle.com/technetwork/middleware/data-integrator/downloads/odi-12c-getstart-vm-install-guide-2401840.pdf">documento de instalación y uso de la máquina virtual</a> se encuentran los detalles sobre la configuración y puesta en marcha de la máquina virtual, así como las contraseñas de todos los usuarios.</p>
+</div>
+<div class="paragraph">
+<p>Las contraseñas básicas que usaremos serán <code>oracle</code> para las cuentas de administrador y <code>welcome1</code> para la de wallet.</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
 </div>
 </div>
 </div>
@@ -597,7 +618,10 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <h2 id="truecreaci-n-de-los-esquemas-de-usuario-para-el-repositorio-master-y-los-repositorios-de-trabajo"><a class="anchor" href="#truecreaci-n-de-los-esquemas-de-usuario-para-el-repositorio-master-y-los-repositorios-de-trabajo"></a>2. Creación de los esquemas de usuario para el repositorio Master y los repositorios de trabajo</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>Desde SQL Developer, como usuario <code>system</code> ejecutamos:</p>
+<p>La base para el uso de ODI para la construcción de almacenes de datos es el repositorio ODI. Aquí veremos cómo crear el repositorio Máster y los repositorios de trabajo. Dichos repositorios se instalan en una base de datos Oracle. Para este tutorial crearemos dos esquemas Oracle, uno para el repositorio Master (<code>granadam</code>, <em>Granada Master</em>) y otro para los repositorios de trabajo (<code>granadaw</code>, <em>Granada Worker</em>).</p>
+</div>
+<div class="paragraph">
+<p>Para crear los esquemas de usuario, desde SQL Developer ejecutaremos como usuario <code>system</code> los comandos siguientes:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -992,10 +1016,43 @@ GRANT CONNECT, RESOURCE TO granadaw;</code></pre>
 </tbody>
 </table>
 <div class="paragraph">
-<p>En el Anexo se muestra el código SQL para la creación de las tablas.</p>
+<p>En el Anexo 1 se muestra el código SQL para la creación de las tablas.</p>
 </div>
 <div class="sect2">
 <h3 id="truepasos-para-la-importaci-n-de-archivos-de-texto-en-odi"><a class="anchor" href="#truepasos-para-la-importaci-n-de-archivos-de-texto-en-odi"></a>3.1. Pasos para la importación de archivos de texto en ODI</h3>
+<div class="paragraph">
+<p>Para poder lleva a cabo las tareas de Extracción, Transformación y Carga (ETL) de datos en ODI primero tenemos que crear la infraestructura relacionada con las fuentes y destinos ETL.</p>
+</div>
+<div class="paragraph">
+<p>Una vez creada la infraestructura, basta con añadir las fuentes de datos, destinos de datos y configurar las operaciones de transformación y carga de datos.</p>
+</div>
+<div class="sect3">
+<h4 id="truecreaci-n-de-la-infraestructura-odi-para-la-importaci-n-de-datos"><a class="anchor" href="#truecreaci-n-de-la-infraestructura-odi-para-la-importaci-n-de-datos"></a>3.1.1. Creación de la infraestructura ODI para la importación de datos</h4>
+<div class="paragraph">
+<p>Antes de llevar a cabo las operaciones ETL tenemos que realizar estos pasos:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Definir la arquitectura física de origen (ruta en la que están almacenados los archivos de texto, p.e. <code>/home/mtorres/Documents/UGR2018/data</code>).</p>
+</li>
+<li>
+<p>Definir la arquitectura lógica de datos (nombre que usaremos para referirnos a la ruta en la que están los archivos a importar p.e. <code>MyFlatFiles</code>).</p>
+</li>
+<li>
+<p>Crear las tablas de destino (p.e. <code>Cuando, Donde, Que, Venta</code>).</p>
+</li>
+<li>
+<p>Definir la arquitectura física de destino (esquema Oracle en el que se almacenará el resultado del proceso ETL, p.e. <code>granadam</code>).</p>
+</li>
+<li>
+<p>Definir la arquitectura lógica de destino (nombre que usaremos para referirnos al esquema Oracle donde se guardarán el resultado del ETL, p.e. <code>DBVentas</code>.)</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Veamos los pasos:</p>
+</div>
 <div class="olist arabic">
 <ol class="arabic">
 <li>
@@ -1034,7 +1091,7 @@ GRANT CONNECT, RESOURCE TO granadaw;</code></pre>
 </div>
 </li>
 <li>
-<p>Definir el modelo de la fuente. En este paso crearemos el <em>data store</em> asociado al archivo de texto. Para ello, se obtendrá la estructura del archivo de texto a importar.</p>
+<p>Crear una carpeta donde guardar los modelos de las fuentes.</p>
 <div class="olist loweralpha">
 <ol class="loweralpha" type="a">
 <li>
@@ -1043,23 +1100,11 @@ GRANT CONNECT, RESOURCE TO granadaw;</code></pre>
 <li>
 <p>Name: <code>FlatFilesVentas</code></p>
 </li>
-<li>
-<p>Designer &#8594; Models &#8594; FlatFilesVentas. Clic derecho y seleccionar New Model.</p>
-</li>
-<li>
-<p>Name: <code>FFVentas</code>, Technology: <code>File</code>, Logical Schema: <code>MyFlatFiles</code>.</p>
-</li>
-<li>
-<p>Designer &#8594; Models &#8594; FlatFilesVentas &#8594; FFVentas. Clic derecho y seleccionar New Datastore</p>
-</li>
-<li>
-<p>Elegir nombre para el archivo, seleccionar el archivo de texto, marcar si es delimitado, indicar si hay fila de encabezado, indicar si los separadores de registro y de campo son MS-DOS o Unix, obtener una vista previa de los datos.</p>
-</li>
 </ol>
 </div>
 </li>
 <li>
-<p>Crear la definición de la tabla de destino. <code>CREATE TABLE &#8230;&#8203;</code>.</p>
+<p>Crear las tablas de destino. <code>CREATE TABLE &#8230;&#8203;</code>.</p>
 </li>
 <li>
 <p>Definir la arquitectura física de destino. En este paso especificamos la instancia de Oracle en la que se almacenará la importación de los datos.</p>
@@ -1100,7 +1145,7 @@ GRANT CONNECT, RESOURCE TO granadaw;</code></pre>
 </div>
 </li>
 <li>
-<p>Definir el modelo del destino. En este paso se crea un grupo en ODI que representa el esquema Oracle en el que estará la tabla de destino.</p>
+<p>Definir el modelo del destino. En este paso se crea un grupo en ODI que representa el esquema Oracle en el que estarán las tablas de destino.</p>
 <div class="olist loweralpha">
 <ol class="loweralpha" type="a">
 <li>
@@ -1119,7 +1164,7 @@ GRANT CONNECT, RESOURCE TO granadaw;</code></pre>
 </div>
 </li>
 <li>
-<p>Preparar el mapping. En este paso se importan los módulos (plugins) necesarios para la importación y definir el mapping.</p>
+<p>Importación de módulos. En este paso se importan los módulos (plugins) necesarios para la importación y definir los mappings.</p>
 <div class="olist loweralpha">
 <ol class="loweralpha" type="a">
 <li>
@@ -1150,8 +1195,42 @@ GRANT CONNECT, RESOURCE TO granadaw;</code></pre>
 <li>
 <p>Designer &#8594; Projects &#8594; Ventas &#8594; First Folder &#8594; Mappings. Clic derecho y seleccionar New Mapping</p>
 </li>
+</ol>
+</div>
+</li>
+</ol>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="trueimportaci-n-de-los-archivos-de-texto"><a class="anchor" href="#trueimportaci-n-de-los-archivos-de-texto"></a>3.2. Importación de los archivos de texto</h3>
+<div class="paragraph">
+<p>Una vez creada la infraestructura para el proceso ETL, procederemos a la importación de los archivos de texto del ejemplo. Estos pasos se repetirán para cada uno de los archivos de texto que se vayan a importar.</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
 <li>
-<p>Name: <code>MappingCuando</code></p>
+<p>Crear el <em>data store</em> asociado al archivo de texto. Para ello, se obtendrá la estructura del archivo de texto a importar.</p>
+<div class="olist loweralpha">
+<ol class="loweralpha" type="a">
+<li>
+<p>Designer &#8594; Models &#8594; FlatFilesVentas &#8594; FFVentas. Clic derecho y seleccionar New Datastore</p>
+</li>
+<li>
+<p>Elegir nombre para el archivo, seleccionar el archivo de texto, marcar si es delimitado, indicar si hay fila de encabezado, indicar si los separadores de registro y de campo son MS-DOS o Unix, obtener una vista previa de los datos.</p>
+</li>
+</ol>
+</div>
+</li>
+<li>
+<p>Preparar el mapping.</p>
+<div class="olist loweralpha">
+<ol class="loweralpha" type="a">
+<li>
+<p>Designer &#8594; Projects &#8594; Ventas &#8594; First Folder &#8594; Mappings. Clic derecho y seleccionar New Mapping</p>
+</li>
+<li>
+<p>Name: p.e. <code>MappingCuando</code></p>
 </li>
 <li>
 <p>Colocar archivo de origen y tabla de destino y crear mapping de los atributos.</p>
@@ -2071,7 +2150,7 @@ GROUP BY CUBE(diaSemana, familia);</code></pre>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2018-02-28 06:43:15 CET
+Last updated 2018-02-28 11:29:35 CET
 </div>
 </div>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/8.9.1/styles/github.min.css">
