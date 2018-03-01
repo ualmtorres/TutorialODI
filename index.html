@@ -449,11 +449,14 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#trueimportaci-n-de-los-archivos-de-texto">3.2. Importación de los archivos de texto</a></li>
 </ul>
 </li>
-<li><a href="#truecreaci-n-de-una-dimensi-n">4. Creación de una dimensión</a>
+<li><a href="#truecreaci-n-de-dimensiones">4. Creación de dimensiones</a>
 <ul class="sectlevel2">
-<li><a href="#truedefinici-n-del-datastore-y-la-secuencia-para-las-claves-generadas">4.1. Definición del datastore y la secuencia para las claves generadas</a></li>
-<li><a href="#truedefinici-n-de-los-niveles-de-las-jerarqu-as">4.2. Definición de los niveles de las jerarquías</a></li>
-<li><a href="#truedefinici-n-de-las-jerarqu-as">4.3. Definición de las jerarquías</a></li>
+<li><a href="#truecreaci-n-de-la-dimensi-n-promocion">4.1. Creación de la dimensión Promocion</a></li>
+<li><a href="#truedimensi-n-canal">4.2. Dimensión Canal</a></li>
+<li><a href="#truecreaci-n-de-la-dimensi-n-customer">4.3. Creación de la dimensión Customer</a></li>
+<li><a href="#truedefinici-n-del-datastore-y-la-secuencia-para-las-claves-generadas">4.4. Definición del datastore y la secuencia para las claves generadas</a></li>
+<li><a href="#truedefinici-n-de-los-niveles-de-las-jerarqu-as">4.5. Definición de los niveles de las jerarquías</a></li>
+<li><a href="#truedefinici-n-de-las-jerarqu-as">4.6. Definición de las jerarquías</a></li>
 </ul>
 </li>
 <li><a href="#truecreaci-n-de-un-cubo">5. Creación de un cubo</a></li>
@@ -465,6 +468,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#truecrear-los-mappings-entre-atributos">6.4. Crear los mappings entre atributos</a></li>
 </ul>
 </li>
+<li><a href="#truecreaci-n-de-paquetes">7. Creación de paquetes</a></li>
 <li><a href="#trueanexo-1-scripts-para-crear-las-tablas-del-ejemplo-venta">Anexo 1. Scripts para crear las tablas del ejemplo Venta</a></li>
 <li><a href="#trueanexo-2-consultas-rollup-y-cube">Anexo 2. Consultas ROLLUP Y CUBE</a></li>
 <li><a href="#truereferencias">Referencias</a></li>
@@ -873,7 +877,247 @@ GRANT CONNECT, RESOURCE TO granadaw;</code></pre>
 <div class="title">Figure 14. Esquema de Ventas</div>
 </div>
 <div class="paragraph">
-<p>Las tablas siguientes muestran la estructura de los archivos de texto:</p>
+<p>En el Anexo 1 se muestra el código SQL para la creación de las tablas.</p>
+</div>
+<div class="sect2">
+<h3 id="truepasos-para-la-importaci-n-de-archivos-de-texto-en-odi"><a class="anchor" href="#truepasos-para-la-importaci-n-de-archivos-de-texto-en-odi"></a>3.1. Pasos para la importación de archivos de texto en ODI</h3>
+<div class="paragraph">
+<p>Para poder lleva a cabo las tareas de Extracción, Transformación y Carga (ETL) de datos en ODI primero tenemos que crear la infraestructura relacionada con las fuentes y destinos ETL.</p>
+</div>
+<div class="paragraph">
+<p>Una vez creada la infraestructura, basta con añadir las fuentes de datos, destinos de datos y configurar las operaciones de transformación y carga de datos.</p>
+</div>
+<div class="sect3">
+<h4 id="truecreaci-n-de-la-infraestructura-odi-para-la-importaci-n-de-datos"><a class="anchor" href="#truecreaci-n-de-la-infraestructura-odi-para-la-importaci-n-de-datos"></a>3.1.1. Creación de la infraestructura ODI para la importación de datos</h4>
+<div class="paragraph">
+<p>Antes de llevar a cabo las operaciones ETL tenemos que realizar estos pasos:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Definir la arquitectura física de origen (ruta en la que están almacenados los archivos de texto, p.e. <code>/home/oracle/Documents/data</code>).</p>
+</li>
+<li>
+<p>Definir la arquitectura lógica de datos (nombre que usaremos para referirnos a la ruta en la que están los archivos a importar p.e. <code>MyFlatFiles</code>).</p>
+</li>
+<li>
+<p>Crear las tablas de destino (p.e. <code>Cuando, Donde, Que, Venta</code>).</p>
+</li>
+<li>
+<p>Definir la arquitectura física de destino (esquema Oracle en el que se almacenará el resultado del proceso ETL, p.e. <code>granadam</code>).</p>
+</li>
+<li>
+<p>Definir la arquitectura lógica de destino (nombre que usaremos para referirnos al esquema Oracle donde se guardarán el resultado del ETL, p.e. <code>DBVentas</code>.)</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Veamos los pasos:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Definir la arquitectura física de origen. En este paso definimos la ruta en la que se almacenan los archivos de texto que vamos a importar.</p>
+<div class="olist loweralpha">
+<ol class="loweralpha" type="a">
+<li>
+<p>Topology &#8594; Physical Architecture &#8594; Technologies &#8594; File. Clic derecho sobre <code>FILE_GENERIC</code> y elegir Open.</p>
+</li>
+<li>
+<p>Host: <code>localhost</code>, User: <code>oracle</code>, Password: <code>oracle</code>.</p>
+</li>
+<li>
+<p>Probar conexión</p>
+</li>
+<li>
+<p>Topology &#8594; Physical Architecture &#8594; Technologies &#8594; FILE_GENERIC. Clic derecho y elegir New Physical Schema</p>
+</li>
+<li>
+<p>Directory (Schema) y Directory (Work Schema): <code>/home/oracle/Documents/data</code></p>
+</li>
+</ol>
+</div>
+</li>
+<li>
+<p>Definir la arquitectura lógica de origen. En este paso asignamos un nombre a la ruta en la que se almacenan los archivos de texto a importar.</p>
+<div class="olist loweralpha">
+<ol class="loweralpha" type="a">
+<li>
+<p>Topology &#8594; Logical Architecture &#8594; Technologies &#8594; File. Clic derecho y elegir New Logical Schema</p>
+</li>
+<li>
+<p>Name: <code>MyFlatFiles</code>, Physical Schemas listbox: <code>FILE_GENERIC &#8230;&#8203; /UGR2018/data</code>.</p>
+</li>
+</ol>
+</div>
+</li>
+<li>
+<p>Crear una carpeta donde guardar los modelos de las fuentes.</p>
+<div class="olist loweralpha">
+<ol class="loweralpha" type="a">
+<li>
+<p>Designer &#8594; Models &#8594; New Model Folder.</p>
+</li>
+<li>
+<p>Name: <code>FlatFilesVentas</code></p>
+</li>
+<li>
+<p>Designer &#8594; Models &#8594; FlatFilesVentas. Clic derecho y seleccionar New Model.</p>
+</li>
+<li>
+<p>Name: <code>FFVentas</code>, Technology: <code>File</code>, Logical Schema: <code>MyFlatFiles</code>.</p>
+</li>
+</ol>
+</div>
+</li>
+<li>
+<p>Crear las tablas de destino. <code>CREATE TABLE &#8230;&#8203;</code>.</p>
+</li>
+<li>
+<p>Definir la arquitectura física de destino. En este paso especificamos la instancia de Oracle en la que se almacenará la importación de los datos.</p>
+<div class="olist loweralpha">
+<ol class="loweralpha" type="a">
+<li>
+<p>Topology &#8594; Physical Architecture &#8594; Oracle. Clic derecho y seleccionar New Data Server</p>
+</li>
+<li>
+<p>Name: <code>DBVentas</code>, Instance: <code>orcl</code>, User: <code>granadam</code>, Password: <code>granada</code>.</p>
+</li>
+<li>
+<p>JDBC Driver: oracle.jdbc.OracleDriver, JDBC Url: <code>jdbc:oracle:thin:@localhost:1521/orcl</code></p>
+</li>
+<li>
+<p>Probar conexión</p>
+</li>
+<li>
+<p>Topology &#8594; Physical Architecture &#8594; Oracle &#8594; DBVentas &#8594; New Physical Schema</p>
+</li>
+<li>
+<p>Schema (Schema), Schema (Work Schema): <code>granadam</code></p>
+</li>
+</ol>
+</div>
+</li>
+<li>
+<p>Definir la arquitectura lógica de destino. En este paso asignamos un nombre al esquema en el que estará la tabla de destino de la importación.</p>
+<div class="olist loweralpha">
+<ol class="loweralpha" type="a">
+<li>
+<p>Topology &#8594; Logical Architecture &#8594; Oracle. Clic derecho y elegir New Logical Schema</p>
+</li>
+<li>
+<p>Name: <code>DBVentas</code>, Physical schema listbox: <code>DBVentas.granadam</code>.</p>
+</li>
+</ol>
+</div>
+</li>
+<li>
+<p>Definir el modelo del destino. En este paso se crea un grupo en ODI que representa el esquema Oracle en el que estarán las tablas de destino.</p>
+<div class="olist loweralpha">
+<ol class="loweralpha" type="a">
+<li>
+<p>Designer &#8594; Models &#8594; New Model.</p>
+</li>
+<li>
+<p>Name: <code>DBVentas</code>, Technology: <code>Oracle</code>, Logical schema: <code>DBVentas</code>.</p>
+</li>
+<li>
+<p>Reverse Engineer &#8594; Reverse Engineer.</p>
+</li>
+<li>
+<p>Designer &#8594; Models &#8594; DBVentas. Seleccionar una tabla, hacer clic derecho sobre View Data. Por ahora, no hay nada.</p>
+</li>
+</ol>
+</div>
+</li>
+<li>
+<p>Importación de módulos. En este paso se importan los módulos (plugins) necesarios para la importación y definir los mappings.</p>
+<div class="olist loweralpha">
+<ol class="loweralpha" type="a">
+<li>
+<p>Designer &#8594; Projects &#8594; New Project</p>
+</li>
+<li>
+<p>Name: Ventas</p>
+</li>
+<li>
+<p>Import Knowledge modules</p>
+<div class="olist lowerroman">
+<ol class="lowerroman" type="i">
+<li>
+<p>Designer &#8594; Projects &#8594; Ventas &#8594; Knowledge modules. Clic derecho y seleccionar Import knowledge modules.</p>
+</li>
+<li>
+<p>File Import Directory. Buscar</p>
+</li>
+<li>
+<p>File Name: <code>/u01/Middleware/ODI12c/odi/sdk/xml-reference</code></p>
+</li>
+<li>
+<p>Seleccionar IKM SQL Incremental Update y LKM File to SQL.</p>
+</li>
+</ol>
+</div>
+</li>
+</ol>
+</div>
+</li>
+</ol>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="trueimportaci-n-de-los-archivos-de-texto"><a class="anchor" href="#trueimportaci-n-de-los-archivos-de-texto"></a>3.2. Importación de los archivos de texto</h3>
+<div class="paragraph">
+<p>Una vez creada la infraestructura para el proceso ETL procederemos a la importación de los archivos de texto del ejemplo. Estos pasos se repetirán para cada uno de los archivos de texto que se vayan a importar.</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Crear el <em>data store</em> asociado al archivo de texto. Para ello, se obtendrá la estructura del archivo de texto a importar.</p>
+<div class="olist loweralpha">
+<ol class="loweralpha" type="a">
+<li>
+<p>Designer &#8594; Models &#8594; FlatFilesVentas &#8594; FFVentas. Clic derecho y seleccionar New Datastore</p>
+</li>
+<li>
+<p>Elegir nombre para el archivo, seleccionar el archivo de texto, marcar si es delimitado, indicar si hay fila de encabezado, indicar si los separadores de registro y de campo son MS-DOS o Unix, obtener una vista previa de los datos.</p>
+</li>
+</ol>
+</div>
+</li>
+<li>
+<p>Preparar el mapping.</p>
+<div class="olist loweralpha">
+<ol class="loweralpha" type="a">
+<li>
+<p>Designer &#8594; Projects &#8594; Ventas &#8594; First Folder &#8594; Mappings. Clic derecho y seleccionar New Mapping</p>
+</li>
+<li>
+<p>Name: p.e. <code>MappingCuando</code></p>
+</li>
+<li>
+<p>Colocar archivo de origen y tabla de destino y crear mapping de los atributos.</p>
+</li>
+<li>
+<p>Seleccionar tabla de destino. Logical tab &#8594; Target. Integration Type: <code>Incremental Update</code></p>
+</li>
+<li>
+<p>Abrir ventana Properties. Physical tab. Seleccionar el proceso Loading KM. Loading Knowledge Module: <code>LKM SQL to Oracle</code>.</p>
+</li>
+</ol>
+</div>
+</li>
+<li>
+<p>Validar y ejecutar el mapping</p>
+</li>
+<li>
+<p>En Operations &#8594; Session List &#8594; Sessions se puede ver el estado de la ejecución del mapping.</p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>Las tablas siguientes muestran la estructura de los archivos de texto. Em importante seguir estas indicaciones a la hora de especificar el tipo de las columnas importadas para que luego no haya errores de falta de corrspondencia de tipos al ejecutar los mappings.</p>
 </div>
 <table class="tableblock frame-all grid-all spread">
 <caption class="title">Table 4. Estructura de la tabla Cuando</caption>
@@ -1015,259 +1259,667 @@ GRANT CONNECT, RESOURCE TO granadaw;</code></pre>
 </tr>
 </tbody>
 </table>
-<div class="paragraph">
-<p>En el Anexo 1 se muestra el código SQL para la creación de las tablas.</p>
-</div>
-<div class="sect2">
-<h3 id="truepasos-para-la-importaci-n-de-archivos-de-texto-en-odi"><a class="anchor" href="#truepasos-para-la-importaci-n-de-archivos-de-texto-en-odi"></a>3.1. Pasos para la importación de archivos de texto en ODI</h3>
-<div class="paragraph">
-<p>Para poder lleva a cabo las tareas de Extracción, Transformación y Carga (ETL) de datos en ODI primero tenemos que crear la infraestructura relacionada con las fuentes y destinos ETL.</p>
-</div>
-<div class="paragraph">
-<p>Una vez creada la infraestructura, basta con añadir las fuentes de datos, destinos de datos y configurar las operaciones de transformación y carga de datos.</p>
-</div>
-<div class="sect3">
-<h4 id="truecreaci-n-de-la-infraestructura-odi-para-la-importaci-n-de-datos"><a class="anchor" href="#truecreaci-n-de-la-infraestructura-odi-para-la-importaci-n-de-datos"></a>3.1.1. Creación de la infraestructura ODI para la importación de datos</h4>
-<div class="paragraph">
-<p>Antes de llevar a cabo las operaciones ETL tenemos que realizar estos pasos:</p>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p>Definir la arquitectura física de origen (ruta en la que están almacenados los archivos de texto, p.e. <code>/home/mtorres/Documents/UGR2018/data</code>).</p>
-</li>
-<li>
-<p>Definir la arquitectura lógica de datos (nombre que usaremos para referirnos a la ruta en la que están los archivos a importar p.e. <code>MyFlatFiles</code>).</p>
-</li>
-<li>
-<p>Crear las tablas de destino (p.e. <code>Cuando, Donde, Que, Venta</code>).</p>
-</li>
-<li>
-<p>Definir la arquitectura física de destino (esquema Oracle en el que se almacenará el resultado del proceso ETL, p.e. <code>granadam</code>).</p>
-</li>
-<li>
-<p>Definir la arquitectura lógica de destino (nombre que usaremos para referirnos al esquema Oracle donde se guardarán el resultado del ETL, p.e. <code>DBVentas</code>.)</p>
-</li>
-</ul>
-</div>
-<div class="paragraph">
-<p>Veamos los pasos:</p>
-</div>
-<div class="olist arabic">
-<ol class="arabic">
-<li>
-<p>Definir la arquitectura física de origen. En este paso definimos la ruta en la que se almacenan los archivos de texto que vamos a importar.</p>
-<div class="olist loweralpha">
-<ol class="loweralpha" type="a">
-<li>
-<p>Topology &#8594; Physical Architecture &#8594; Technologies &#8594; File. Clic derecho sobre <code>FILE_GENERIC</code> y elegir Open.</p>
-</li>
-<li>
-<p>Host: <code>localhost</code>, User: <code>oracle</code>, Password: <code>oracle</code>.</p>
-</li>
-<li>
-<p>Probar conexión</p>
-</li>
-<li>
-<p>Topology &#8594; Physical Architecture &#8594; Technologies &#8594; FILE_GENERIC. Clic derecho y elegir New Physical Schema</p>
-</li>
-<li>
-<p>Directory (Schema) y Directory (Work Schema): <code>/home/mtorres/Documents/UGR2018/data</code></p>
-</li>
-</ol>
-</div>
-</li>
-<li>
-<p>Definir la arquitectura lógica de origen. En este paso asignamos un nombre a la ruta en la que se almacenan los archivos de texto a importar.</p>
-<div class="olist loweralpha">
-<ol class="loweralpha" type="a">
-<li>
-<p>Topology &#8594; Logical Architecture &#8594; Technologies &#8594; File. Clic derecho y elegir New Logical Schema</p>
-</li>
-<li>
-<p>Name: <code>MyFlatFiles</code>, Physical schema listbox: <code>FILE_GENERIC &#8230;&#8203; /UGR2018/data</code>.</p>
-</li>
-</ol>
-</div>
-</li>
-<li>
-<p>Crear una carpeta donde guardar los modelos de las fuentes.</p>
-<div class="olist loweralpha">
-<ol class="loweralpha" type="a">
-<li>
-<p>Designer &#8594; Models &#8594; New Model Folder.</p>
-</li>
-<li>
-<p>Name: <code>FlatFilesVentas</code></p>
-</li>
-</ol>
-</div>
-</li>
-<li>
-<p>Crear las tablas de destino. <code>CREATE TABLE &#8230;&#8203;</code>.</p>
-</li>
-<li>
-<p>Definir la arquitectura física de destino. En este paso especificamos la instancia de Oracle en la que se almacenará la importación de los datos.</p>
-<div class="olist loweralpha">
-<ol class="loweralpha" type="a">
-<li>
-<p>Topology &#8594; Physical Architecture &#8594; Oracle. Clic derecho y seleccionar New Data Server</p>
-</li>
-<li>
-<p>Name: <code>DB-HR</code>, Instance: <code>orcl</code>, User: <code>granadam</code>, Password: <code>granada</code>.</p>
-</li>
-<li>
-<p>JDBC Driver: oracle.jdbc.OracleDriver, JDBC Url: <code>jdbc:oracle:thin:@localhost:1521/orcl</code></p>
-</li>
-<li>
-<p>Probar conexión</p>
-</li>
-<li>
-<p>Topology &#8594; Physical Architecture &#8594; Oracle &#8594; DB-HR &#8594; New Physical Schema</p>
-</li>
-<li>
-<p>Schema (Schema), Schema (Work Schema): <code>granadam</code></p>
-</li>
-</ol>
-</div>
-</li>
-<li>
-<p>Definir la arquitectura lógica de destino. En este paso asignamos un nombre al esquema en el que estará la tabla de destino de la importación.</p>
-<div class="olist loweralpha">
-<ol class="loweralpha" type="a">
-<li>
-<p>Topology &#8594; Logical Architecture &#8594; Oracle. Clic derecho y elegir New Logical Schema</p>
-</li>
-<li>
-<p>Name: <code>DBVentas</code>, Physical schema listbox: <code>DBVentas.granadam</code>.</p>
-</li>
-</ol>
-</div>
-</li>
-<li>
-<p>Definir el modelo del destino. En este paso se crea un grupo en ODI que representa el esquema Oracle en el que estarán las tablas de destino.</p>
-<div class="olist loweralpha">
-<ol class="loweralpha" type="a">
-<li>
-<p>Designer &#8594; Models &#8594; New Model.</p>
-</li>
-<li>
-<p>Name: <code>DBVentas</code>, Technology: <code>Oracle</code>, Logical schema: <code>DBVentas</code>.</p>
-</li>
-<li>
-<p>Reverse Engineer &#8594; Reverse Engineer.</p>
-</li>
-<li>
-<p>Designer &#8594; Models &#8594; DB-HR &#8594; View Data.</p>
-</li>
-</ol>
-</div>
-</li>
-<li>
-<p>Importación de módulos. En este paso se importan los módulos (plugins) necesarios para la importación y definir los mappings.</p>
-<div class="olist loweralpha">
-<ol class="loweralpha" type="a">
-<li>
-<p>Designer &#8594; Projects &#8594; New Project</p>
-</li>
-<li>
-<p>Name: Ventas</p>
-</li>
-<li>
-<p>Import Knowledge modules</p>
-<div class="olist lowerroman">
-<ol class="lowerroman" type="i">
-<li>
-<p>Designer &#8594; Projects &#8594; Ventas &#8594; Knowledge modules. Clic derecho y seleccionar Import knowledge modules.</p>
-</li>
-<li>
-<p>File Import Directory. Buscar</p>
-</li>
-<li>
-<p>File Name: <code>/u01/Middleware/ODI12c/odi/sdk/xml-reference</code></p>
-</li>
-<li>
-<p>Seleccionar IKM SQL Incremental Update y LKM File to SQL.</p>
-</li>
-</ol>
-</div>
-</li>
-</ol>
-</div>
-</li>
-</ol>
-</div>
-</div>
-</div>
-<div class="sect2">
-<h3 id="trueimportaci-n-de-los-archivos-de-texto"><a class="anchor" href="#trueimportaci-n-de-los-archivos-de-texto"></a>3.2. Importación de los archivos de texto</h3>
-<div class="paragraph">
-<p>Una vez creada la infraestructura para el proceso ETL procederemos a la importación de los archivos de texto del ejemplo. Estos pasos se repetirán para cada uno de los archivos de texto que se vayan a importar.</p>
-</div>
-<div class="olist arabic">
-<ol class="arabic">
-<li>
-<p>Crear el <em>data store</em> asociado al archivo de texto. Para ello, se obtendrá la estructura del archivo de texto a importar.</p>
-<div class="olist loweralpha">
-<ol class="loweralpha" type="a">
-<li>
-<p>Designer &#8594; Models &#8594; FlatFilesVentas &#8594; FFVentas. Clic derecho y seleccionar New Datastore</p>
-</li>
-<li>
-<p>Elegir nombre para el archivo, seleccionar el archivo de texto, marcar si es delimitado, indicar si hay fila de encabezado, indicar si los separadores de registro y de campo son MS-DOS o Unix, obtener una vista previa de los datos.</p>
-</li>
-</ol>
-</div>
-</li>
-<li>
-<p>Preparar el mapping.</p>
-<div class="olist loweralpha">
-<ol class="loweralpha" type="a">
-<li>
-<p>Designer &#8594; Projects &#8594; Ventas &#8594; First Folder &#8594; Mappings. Clic derecho y seleccionar New Mapping</p>
-</li>
-<li>
-<p>Name: p.e. <code>MappingCuando</code></p>
-</li>
-<li>
-<p>Colocar archivo de origen y tabla de destino y crear mapping de los atributos.</p>
-</li>
-<li>
-<p>Seleccionar tabla de destino. Logical tab &#8594; Target. Integration Type: <code>Incremental Update</code></p>
-</li>
-<li>
-<p>Physical tab. Loading Knowledge Module: <code>LKM SQL to SQL</code>.</p>
-</li>
-</ol>
-</div>
-</li>
-<li>
-<p>Validar y ejecutar el mapping</p>
-</li>
-<li>
-<p>En Operations &#8594; Session List &#8594; Sessions se puede ver el estado de la ejecución del mapping.</p>
-</li>
-</ol>
-</div>
 </div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="truecreaci-n-de-una-dimensi-n"><a class="anchor" href="#truecreaci-n-de-una-dimensi-n"></a>4. Creación de una dimensión</h2>
+<h2 id="truecreaci-n-de-dimensiones"><a class="anchor" href="#truecreaci-n-de-dimensiones"></a>4. Creación de dimensiones</h2>
 <div class="sectionbody">
+<div class="paragraph">
+<p>Para la definición de una dimensión en ODI tendremos que especificar:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Nombre de la dimensión.</p>
+</li>
+<li>
+<p>Tipo de implementación (estrella o copo de nieve).</p>
+</li>
+<li>
+<p>Datastore. Indica la tabla en el que se va a almacenar la dimensión.</p>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>Cada nivel puede tener su propio datastore.</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+</li>
+<li>
+<p>Secuencia para la creación de claves generadas.</p>
+</li>
+<li>
+<p>Niveles de la dimensión.</p>
+<div class="olist loweralpha">
+<ol class="loweralpha" type="a">
+<li>
+<p>Para cada nivel se especifica el datastore que contiene los datos del nivel.</p>
+</li>
+<li>
+<p>En cada nivel se define una clave generada, una clave natural y un atributo que le da nombre al nivel.</p>
+</li>
+<li>
+<p>Cada nivel establece su relación con el nivel superior.</p>
+</li>
+</ol>
+</div>
+</li>
+<li>
+<p>Jerarquías de la dimensión, estableciendo los niveles que la forman ordenados de nivel superior a nivel inferior.</p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>A continuación crearemos un cubo de Ventas tomando como base los datos de ventas almacenados en el esquema XWEEK. Las tablas de staging están en el esquema BI_SALES.</p>
+</div>
+<div class="sect2">
+<h3 id="truecreaci-n-de-la-dimensi-n-promocion"><a class="anchor" href="#truecreaci-n-de-la-dimensi-n-promocion"></a>4.1. Creación de la dimensión Promocion</h3>
+<div class="imageblock">
+<div class="content">
+<img src="./images/DimensionPromocion.png" alt="Dimensión Promoción y sus tablas base">
+</div>
+</div>
+<table class="tableblock frame-all grid-all spread">
+<caption class="title">Table 8. Niveles de la dimensión Promotion</caption>
+<colgroup>
+<col style="width: 33.3333%;">
+<col style="width: 66.6667%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Nivel</th>
+<th class="tableblock halign-left valign-top">Staging Datastore</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Total</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">PROMOTIONS_TOTAL_STG</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Category</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">PROMOTIONS_CATEGORY_STG</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Subcategory</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">PROMOTIONS_SUBCATEGORY_STG</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Promotion</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">PROMOTIONS_PROMOTION_STG</p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p>A continuación, definiremos los atributos de cada nivel:</p>
+</div>
+<table class="tableblock frame-all grid-all spread">
+<caption class="title">Table 9. Atributos de nivel de la dimensión Promotion</caption>
+<colgroup>
+<col style="width: 20%;">
+<col style="width: 20%;">
+<col style="width: 20%;">
+<col style="width: 20%;">
+<col style="width: 20%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Nivel</th>
+<th class="tableblock halign-left valign-top">Nombre</th>
+<th class="tableblock halign-left valign-top">Surrogate Key</th>
+<th class="tableblock halign-left valign-top">Tipo de datos</th>
+<th class="tableblock halign-left valign-top">Atributo</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Total</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Surrogate_Key</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">X</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">NUMERIC</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">TOTAL_SURROGATE_KEY</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Natural Key</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">-</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">VARCHAR(40)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">TOTAL_NATURAL_KEY</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Name</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">-</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">VARCHAR(60)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">TOTAL_NAME</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Category</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Surrogate_Key</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">X</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">NUMERIC</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">CATEGORY_SURROGATE_KEY</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Natural Key</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">-</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">VARCHAR(40)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">CATEGORY_NATURAL_KEY</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Name</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">-</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">VARCHAR(60)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">CATEGORY_NAME</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Subcategory</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Surrogate_Key</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">X</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">NUMERIC</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">SUBCATEGORY_SURROGATE_KEY</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Natural Key</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">-</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">VARCHAR(40)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">SUBCATEGORY_NATURAL_KEY</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Name</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">-</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">VARCHAR(60)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">SUBCATEGORY_NAME</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Promotion</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Surrogate_Key</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">X</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">NUMERIC</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">PROMOTION_SURROGATE_KEY</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Natural Key</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">-</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">VARCHAR(40)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">PROMOTION_NATURAL_KEY</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Name</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">-</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">VARCHAR(60)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">PROMOTION_NAME</p></td>
+</tr>
+</tbody>
+</table>
+<table class="tableblock frame-all grid-all spread">
+<caption class="title">Table 10. Relaciones de nivel en la dimensión Promotion</caption>
+<colgroup>
+<col style="width: 14.2857%;">
+<col style="width: 28.5714%;">
+<col style="width: 28.5714%;">
+<col style="width: 28.5715%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Nivel</th>
+<th class="tableblock halign-left valign-top">Natural Key Members</th>
+<th class="tableblock halign-left valign-top">Parent References - Name</th>
+<th class="tableblock halign-left valign-top">Parent References - Parent Level</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Total</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Natural_Key</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">-</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">-</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Category</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Natural_Key</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Category_of_Total</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Total</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Subcategory</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Natural_Key</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Subcategory_of_category</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Category</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Promotion</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Natural_Key</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Promotion_od_subcategory</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Subcategory</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect2">
+<h3 id="truedimensi-n-canal"><a class="anchor" href="#truedimensi-n-canal"></a>4.2. Dimensión Canal</h3>
+<div class="imageblock">
+<div class="content">
+<img src="./images/DimensionCanal.png" alt="Dimensión Canal y sus tablas base">
+</div>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p><code>CLASSES</code> actúa como una vista de tabla <code>CHANNELS</code> para poder usarla dos veces. La necesitamos para obtener las clases de los canales. Las clases se obtienen con <code>SELECT DISTINCT CLASS</code>.</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<table class="tableblock frame-all grid-all spread">
+<caption class="title">Table 11. Niveles de la dimensión Channels</caption>
+<colgroup>
+<col style="width: 33.3333%;">
+<col style="width: 66.6667%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Nivel</th>
+<th class="tableblock halign-left valign-top">Staging Datastore</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Total</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">CHANNELS_TOTAL_STG</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Class</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">CHANNELS_CLASS_STG</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Channel</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">CHANNELS_CHANNEL_STG</p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p>A continuación, definiremos los atributos de cada nivel:</p>
+</div>
+<table class="tableblock frame-all grid-all spread">
+<caption class="title">Table 12. Atributos de nivel de la dimensión Channel</caption>
+<colgroup>
+<col style="width: 20%;">
+<col style="width: 20%;">
+<col style="width: 20%;">
+<col style="width: 20%;">
+<col style="width: 20%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Nivel</th>
+<th class="tableblock halign-left valign-top">Nombre</th>
+<th class="tableblock halign-left valign-top">Surrogate Key</th>
+<th class="tableblock halign-left valign-top">Tipo de datos</th>
+<th class="tableblock halign-left valign-top">Atributo</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Total</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Surrogate_Key</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">X</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">NUMERIC</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">TOTAL_SURROGATE_KEY</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Natural Key</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">-</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">VARCHAR(40)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">TOTAL_NATURAL_KEY</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Name</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">-</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">VARCHAR(60)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">TOTAL_NAME</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Class</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Surrogate_Key</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">X</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">NUMERIC</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">CLASS_SURROGATE_KEY</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Natural Key</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">-</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">VARCHAR(40)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Class_NATURAL_KEY</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Name</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">-</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">VARCHAR(60)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Class_NAME</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Channel</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Surrogate_Key</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">X</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">NUMERIC</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">CHANNEL_SURROGATE_KEY</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Natural Key</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">-</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">VARCHAR(40)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">CHANNEL_NATURAL_KEY</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Name</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">-</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">VARCHAR(60)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">CHANNEL_NAME</p></td>
+</tr>
+</tbody>
+</table>
+<table class="tableblock frame-all grid-all spread">
+<caption class="title">Table 13. Relaciones de nivel en la dimensión Channel</caption>
+<colgroup>
+<col style="width: 14.2857%;">
+<col style="width: 28.5714%;">
+<col style="width: 28.5714%;">
+<col style="width: 28.5715%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Nivel</th>
+<th class="tableblock halign-left valign-top">Natural Key Members</th>
+<th class="tableblock halign-left valign-top">Parent References - Name</th>
+<th class="tableblock halign-left valign-top">Parent References - Parent Level</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Total</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Natural_Key</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">-</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">-</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Class</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Natural_Key</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Class_of_Total</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Total</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Channel</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Natural_Key</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Channel_of_Class</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Class</p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p>|=== Dimensión Producto</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="./images/DimensionProducto.png" alt="Dimensión Producto y sus tablas base">
+</div>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p><code>SUBCATEGORIES</code> actúa como una vista de tabla <code>CATEGORIES</code> para poder usarla dos veces. Usaremos las dos de forma separada para obtener las subcategorías y las categorías seǵun tengan o no un <code>CATEGORY_ID</code> superior. En las subcategorías <code>CATEGORY_ID IS NOT NULL</code>, mientras que en las categorías <code>CATEGORY_ID IS NULL</code>.</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<table class="tableblock frame-all grid-all spread">
+<caption class="title">Table 14. Niveles de la dimensión Product</caption>
+<colgroup>
+<col style="width: 33.3333%;">
+<col style="width: 66.6667%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Nivel</th>
+<th class="tableblock halign-left valign-top">Staging Datastore</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Total</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">PRODUCTS_TOTAL_STG</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Category</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">PRODUCTS_CATEGORY_STG</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Subcategory</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">PRODUCTS_SUBCATEGORY_STG</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Product</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">PRODUCTS_PRODUCT_STG</p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p>A continuación, definiremos los atributos de cada nivel:</p>
+</div>
+<table class="tableblock frame-all grid-all spread">
+<caption class="title">Table 15. Atributos de nivel de la dimensión Product</caption>
+<colgroup>
+<col style="width: 20%;">
+<col style="width: 20%;">
+<col style="width: 20%;">
+<col style="width: 20%;">
+<col style="width: 20%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Nivel</th>
+<th class="tableblock halign-left valign-top">Nombre</th>
+<th class="tableblock halign-left valign-top">Surrogate Key</th>
+<th class="tableblock halign-left valign-top">Tipo de datos</th>
+<th class="tableblock halign-left valign-top">Atributo</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Total</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Surrogate_Key</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">X</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">NUMERIC</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">TOTAL_SURROGATE_KEY</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Natural Key</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">-</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">VARCHAR(40)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">TOTAL_NATURAL_KEY</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Category</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">-</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">VARCHAR(60)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">TOTAL_NAME</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Category</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Surrogate_Key</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">X</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">NUMERIC</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">CATEGORY_SURROGATE_KEY</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Natural Key</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">-</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">VARCHAR(40)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">CATEGORY_NATURAL_KEY</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Name</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">-</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">VARCHAR(60)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">CATEGORY_NAME</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Subcategory</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Surrogate_Key</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">X</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">NUMERIC</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">SUBCATEGORY_SURROGATE_KEY</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Natural Key</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">-</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">VARCHAR(40)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">SUBCATEGORY_NATURAL_KEY</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Name</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">-</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">VARCHAR(60)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">SUBCATEGORY_NAME</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Product</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Surrogate_Key</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">X</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">NUMERIC</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">PRODUCT_SURROGATE_KEY</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Natural Key</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">-</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">VARCHAR(40)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">PRODUCT_NATURAL_KEY</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Name</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">-</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">VARCHAR(60)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">PRODUCT_NAME</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Pack_Size</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">-</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">VARCHAR(30)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">SUBCATEGORY_NAME</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">List_Price</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">-</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">VARCHAR(30)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">SUBCATEGORY_NAME</p></td>
+</tr>
+</tbody>
+</table>
+<table class="tableblock frame-all grid-all spread">
+<caption class="title">Table 16. Relaciones de nivel en la dimensión Product</caption>
+<colgroup>
+<col style="width: 14.2857%;">
+<col style="width: 28.5714%;">
+<col style="width: 28.5714%;">
+<col style="width: 28.5715%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Nivel</th>
+<th class="tableblock halign-left valign-top">Natural Key Members</th>
+<th class="tableblock halign-left valign-top">Parent References - Name</th>
+<th class="tableblock halign-left valign-top">Parent References - Parent Level</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Total</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Natural_Key</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">-</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">-</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Category</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Natural_Key</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Category_of_Total</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Total</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Subcategory</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Natural_Key</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Subcategory_of_Category</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Category</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Product</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Natural_Key</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Product_of_Subcategory</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Subcategory</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect2">
+<h3 id="truecreaci-n-de-la-dimensi-n-customer"><a class="anchor" href="#truecreaci-n-de-la-dimensi-n-customer"></a>4.3. Creación de la dimensión Customer</h3>
 <div class="paragraph">
 <p>Vamos a crear la dimensión <code>Customer</code> a partir de la tabla <code>CUSTOMERS_TAB</code> del esquema <code>BI_SALES</code>.</p>
 </div>
 <div class="paragraph">
+<p>En primer lugar, cerraremos las conexiones existentes en ODI y estableceremos una nueva conexión al repositorio con Login Name <code>Cubes and Dimensions</code>. Se trata de un ejemplo preconfigurado en la máquina virtual de ODI.</p>
+</div>
+<div class="paragraph">
 <p>En la ficha <code>Designer</code> abrir el bloque <code>Dimensions and Cubes</code>.</p>
 </div>
+</div>
 <div class="sect2">
-<h3 id="truedefinici-n-del-datastore-y-la-secuencia-para-las-claves-generadas"><a class="anchor" href="#truedefinici-n-del-datastore-y-la-secuencia-para-las-claves-generadas"></a>4.1. Definición del datastore y la secuencia para las claves generadas</h3>
+<h3 id="truedefinici-n-del-datastore-y-la-secuencia-para-las-claves-generadas"><a class="anchor" href="#truedefinici-n-del-datastore-y-la-secuencia-para-las-claves-generadas"></a>4.4. Definición del datastore y la secuencia para las claves generadas</h3>
 <div class="paragraph">
 <p>Especificar los valores siguientes en la ficha <code>Definition</code></p>
 </div>
 <table class="tableblock frame-all grid-all spread">
-<caption class="title">Table 8. Valores para la conexión al esquema de usuario del repositorio Máster</caption>
+<caption class="title">Table 17. Valores para la conexión al esquema de usuario del repositorio Máster</caption>
 <colgroup>
 <col style="width: 20%;">
 <col style="width: 40%;">
@@ -1290,7 +1942,7 @@ GRANT CONNECT, RESOURCE TO granadaw;</code></pre>
 </table>
 </div>
 <div class="sect2">
-<h3 id="truedefinici-n-de-los-niveles-de-las-jerarqu-as"><a class="anchor" href="#truedefinici-n-de-los-niveles-de-las-jerarqu-as"></a>4.2. Definición de los niveles de las jerarquías</h3>
+<h3 id="truedefinici-n-de-los-niveles-de-las-jerarqu-as"><a class="anchor" href="#truedefinici-n-de-los-niveles-de-las-jerarqu-as"></a>4.5. Definición de los niveles de las jerarquías</h3>
 <div class="paragraph">
 <p>Seleccionar la ficha <code>Levels</code>.</p>
 </div>
@@ -1323,7 +1975,7 @@ GRANT CONNECT, RESOURCE TO granadaw;</code></pre>
 </ul>
 </div>
 <table class="tableblock frame-all grid-all spread">
-<caption class="title">Table 9. Niveles de la dimensión Customer</caption>
+<caption class="title">Table 18. Niveles de la dimensión Customer</caption>
 <colgroup>
 <col style="width: 33.3333%;">
 <col style="width: 66.6667%;">
@@ -1369,7 +2021,7 @@ GRANT CONNECT, RESOURCE TO granadaw;</code></pre>
 <p>A continuación, definiremos los atributos de cada nivel:</p>
 </div>
 <table class="tableblock frame-all grid-all spread">
-<caption class="title">Table 10. Atributos de nivel de la dimensión Customer</caption>
+<caption class="title">Table 19. Atributos de nivel de la dimensión Customer</caption>
 <colgroup>
 <col style="width: 20%;">
 <col style="width: 20%;">
@@ -1579,7 +2231,7 @@ GRANT CONNECT, RESOURCE TO granadaw;</code></pre>
 </tbody>
 </table>
 <table class="tableblock frame-all grid-all spread">
-<caption class="title">Table 11. Relaciones de nivel en la dimensión Customer</caption>
+<caption class="title">Table 20. Relaciones de nivel en la dimensión Customer</caption>
 <colgroup>
 <col style="width: 14.2857%;">
 <col style="width: 28.5714%;">
@@ -1641,7 +2293,7 @@ GRANT CONNECT, RESOURCE TO granadaw;</code></pre>
 </table>
 </div>
 <div class="sect2">
-<h3 id="truedefinici-n-de-las-jerarqu-as"><a class="anchor" href="#truedefinici-n-de-las-jerarqu-as"></a>4.3. Definición de las jerarquías</h3>
+<h3 id="truedefinici-n-de-las-jerarqu-as"><a class="anchor" href="#truedefinici-n-de-las-jerarqu-as"></a>4.6. Definición de las jerarquías</h3>
 <div class="paragraph">
 <p>Definir una jerarquía denominada <code>CUSTOMERS_STD_HIER</code> con los niveles siguientes y marcarla como jerarquía predeterminada.</p>
 </div>
@@ -1683,7 +2335,7 @@ GRANT CONNECT, RESOURCE TO granadaw;</code></pre>
 <p>En la ficha <code>Details</code> definiremos las dimensiones indicando el nivel con el que se relacionan con el cubo de acuerdo con la tabla siguiente:</p>
 </div>
 <table class="tableblock frame-all grid-all spread">
-<caption class="title">Table 12. Correspondencia de las dimensiones con el cubo</caption>
+<caption class="title">Table 21. Correspondencia de las dimensiones con el cubo</caption>
 <colgroup>
 <col style="width: 50%;">
 <col style="width: 50%;">
@@ -1721,7 +2373,7 @@ GRANT CONNECT, RESOURCE TO granadaw;</code></pre>
 <p>Las medidas del cubon son:</p>
 </div>
 <table class="tableblock frame-all grid-all spread">
-<caption class="title">Table 13. Medidas del cubo</caption>
+<caption class="title">Table 22. Medidas del cubo</caption>
 <colgroup>
 <col style="width: 25%;">
 <col style="width: 25%;">
@@ -2028,6 +2680,39 @@ FROM CITIES;</code></pre>
 </div>
 </div>
 <div class="sect1">
+<h2 id="truecreaci-n-de-paquetes"><a class="anchor" href="#truecreaci-n-de-paquetes"></a>7. Creación de paquetes</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Con los paquetes podemos encadenar la ejecución de mappings. Además, permiten ejecutarlos de forma condicional en función de su ejecución satisfactoria o fallida.</p>
+</div>
+<div class="paragraph">
+<p>En nuestro caso el paquete ejecutará de forma secuencial los paquetes:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Mapping de la dimensión Promocion</p>
+</li>
+<li>
+<p>Mappinc de la dimensión Canal</p>
+</li>
+<li>
+<p>Mapping de la dimensión Producto</p>
+</li>
+<li>
+<p>Mapping de la dimensión Cliente</p>
+</li>
+<li>
+<p>Mapping de la dimensión Fecha</p>
+</li>
+<li>
+<p>Mapping del cubo de ventas</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect1">
 <h2 id="trueanexo-1-scripts-para-crear-las-tablas-del-ejemplo-venta"><a class="anchor" href="#trueanexo-1-scripts-para-crear-las-tablas-del-ejemplo-venta"></a>Anexo 1. Scripts para crear las tablas del ejemplo Venta</h2>
 <div class="sectionbody">
 <div class="listingblock">
@@ -2150,7 +2835,7 @@ GROUP BY CUBE(diaSemana, familia);</code></pre>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2018-02-28 11:44:41 CET
+Last updated 2018-03-01 18:41:07 CET
 </div>
 </div>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/8.9.1/styles/github.min.css">
