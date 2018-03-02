@@ -453,19 +453,20 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <ul class="sectlevel2">
 <li><a href="#truecreaci-n-de-la-dimensi-n-promocion">4.1. Creación de la dimensión Promocion</a></li>
 <li><a href="#truedimensi-n-canal">4.2. Dimensión Canal</a></li>
-<li><a href="#truecreaci-n-de-la-dimensi-n-customer">4.3. Creación de la dimensión Customer</a></li>
-<li><a href="#truedefinici-n-del-datastore-y-la-secuencia-para-las-claves-generadas">4.4. Definición del datastore y la secuencia para las claves generadas</a></li>
-<li><a href="#truedefinici-n-de-los-niveles-de-las-jerarqu-as">4.5. Definición de los niveles de las jerarquías</a></li>
-<li><a href="#truedefinici-n-de-las-jerarqu-as">4.6. Definición de las jerarquías</a></li>
+<li><a href="#truedimensi-n-producto">4.3. Dimensión Producto</a></li>
+<li><a href="#truecreaci-n-de-la-dimensi-n-customer">4.4. Creación de la dimensión Customer</a></li>
+<li><a href="#truedefinici-n-del-datastore-y-la-secuencia-para-las-claves-generadas">4.5. Definición del datastore y la secuencia para las claves generadas</a></li>
+<li><a href="#truedefinici-n-de-los-niveles-de-las-jerarqu-as">4.6. Definición de los niveles de las jerarquías</a></li>
+<li><a href="#truedefinici-n-de-las-jerarqu-as">4.7. Definición de las jerarquías</a></li>
 </ul>
 </li>
 <li><a href="#truecreaci-n-de-un-cubo">5. Creación de un cubo</a></li>
 <li><a href="#truecreaci-n-de-mappings">6. Creación de mappings</a>
 <ul class="sectlevel2">
-<li><a href="#trueobtener-s-lo-las-provincias">6.1. Obtener sólo las provincias</a></li>
-<li><a href="#truecreaci-n-de-joins">6.2. Creación de joins</a></li>
-<li><a href="#trueobtener-las-regiones-y-las-subregiones">6.3. Obtener las regiones y las subregiones</a></li>
-<li><a href="#truecrear-los-mappings-entre-atributos">6.4. Crear los mappings entre atributos</a></li>
+<li><a href="#truemapping-de-promotion">6.1. Mapping de Promotion</a></li>
+<li><a href="#truemapping-de-canal">6.2. Mapping de Canal</a></li>
+<li><a href="#truemapping-de-producto">6.3. Mapping de Producto</a></li>
+<li><a href="#truemapping-de-customer">6.4. Mapping de Customer</a></li>
 </ul>
 </li>
 <li><a href="#truecreaci-n-de-paquetes">7. Creación de paquetes</a></li>
@@ -1682,9 +1683,9 @@ GRANT CONNECT, RESOURCE TO granadaw;</code></pre>
 </tr>
 </tbody>
 </table>
-<div class="paragraph">
-<p>|=== Dimensión Producto</p>
 </div>
+<div class="sect2">
+<h3 id="truedimensi-n-producto"><a class="anchor" href="#truedimensi-n-producto"></a>4.3. Dimensión Producto</h3>
 <div class="imageblock">
 <div class="content">
 <img src="./images/DimensionProducto.png" alt="Dimensión Producto y sus tablas base">
@@ -1902,7 +1903,7 @@ GRANT CONNECT, RESOURCE TO granadaw;</code></pre>
 </table>
 </div>
 <div class="sect2">
-<h3 id="truecreaci-n-de-la-dimensi-n-customer"><a class="anchor" href="#truecreaci-n-de-la-dimensi-n-customer"></a>4.3. Creación de la dimensión Customer</h3>
+<h3 id="truecreaci-n-de-la-dimensi-n-customer"><a class="anchor" href="#truecreaci-n-de-la-dimensi-n-customer"></a>4.4. Creación de la dimensión Customer</h3>
 <div class="paragraph">
 <p>Vamos a crear la dimensión <code>Customer</code> a partir de la tabla <code>CUSTOMERS_TAB</code> del esquema <code>BI_SALES</code>.</p>
 </div>
@@ -1914,7 +1915,7 @@ GRANT CONNECT, RESOURCE TO granadaw;</code></pre>
 </div>
 </div>
 <div class="sect2">
-<h3 id="truedefinici-n-del-datastore-y-la-secuencia-para-las-claves-generadas"><a class="anchor" href="#truedefinici-n-del-datastore-y-la-secuencia-para-las-claves-generadas"></a>4.4. Definición del datastore y la secuencia para las claves generadas</h3>
+<h3 id="truedefinici-n-del-datastore-y-la-secuencia-para-las-claves-generadas"><a class="anchor" href="#truedefinici-n-del-datastore-y-la-secuencia-para-las-claves-generadas"></a>4.5. Definición del datastore y la secuencia para las claves generadas</h3>
 <div class="paragraph">
 <p>Especificar los valores siguientes en la ficha <code>Definition</code></p>
 </div>
@@ -1942,7 +1943,7 @@ GRANT CONNECT, RESOURCE TO granadaw;</code></pre>
 </table>
 </div>
 <div class="sect2">
-<h3 id="truedefinici-n-de-los-niveles-de-las-jerarqu-as"><a class="anchor" href="#truedefinici-n-de-los-niveles-de-las-jerarqu-as"></a>4.5. Definición de los niveles de las jerarquías</h3>
+<h3 id="truedefinici-n-de-los-niveles-de-las-jerarqu-as"><a class="anchor" href="#truedefinici-n-de-los-niveles-de-las-jerarqu-as"></a>4.6. Definición de los niveles de las jerarquías</h3>
 <div class="paragraph">
 <p>Seleccionar la ficha <code>Levels</code>.</p>
 </div>
@@ -2293,7 +2294,7 @@ GRANT CONNECT, RESOURCE TO granadaw;</code></pre>
 </table>
 </div>
 <div class="sect2">
-<h3 id="truedefinici-n-de-las-jerarqu-as"><a class="anchor" href="#truedefinici-n-de-las-jerarqu-as"></a>4.6. Definición de las jerarquías</h3>
+<h3 id="truedefinici-n-de-las-jerarqu-as"><a class="anchor" href="#truedefinici-n-de-las-jerarqu-as"></a>4.7. Definición de las jerarquías</h3>
 <div class="paragraph">
 <p>Definir una jerarquía denominada <code>CUSTOMERS_STD_HIER</code> con los niveles siguientes y marcarla como jerarquía predeterminada.</p>
 </div>
@@ -2414,6 +2415,219 @@ GRANT CONNECT, RESOURCE TO granadaw;</code></pre>
 <div class="sect1">
 <h2 id="truecreaci-n-de-mappings"><a class="anchor" href="#truecreaci-n-de-mappings"></a>6. Creación de mappings</h2>
 <div class="sectionbody">
+<div class="sect2">
+<h3 id="truemapping-de-promotion"><a class="anchor" href="#truemapping-de-promotion"></a>6.1. Mapping de Promotion</h3>
+<div class="paragraph">
+<p>Crear un componente <code>EXPRESSION</code> en la zona de mappings añadiéndole un atributo <code>TOTAL_NAME</code> con estas propiedades:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Tipo de datos: <code>VARCHAR(20)</code></p>
+</li>
+<li>
+<p>Expresión: <code>'Promotions_Total'</code></p>
+</li>
+</ul>
+</div>
+<table class="tableblock frame-all grid-all spread">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Origen</th>
+<th class="tableblock halign-left valign-top">Destino en dimensión <code>Promotion</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>EXPRESSION.TOTAL_NAME</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Total_Natural_Key</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>EXPRESSION.TOTAL_NAME</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Total_Name</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>TO_CHAR(PROMO_CATEGORIES.ID)</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Category_Natural_Key</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>PROMO_CATEOGORIES.NAME</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Category_Name</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">-</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Cambiar la expresión de <code>REF_Total_Natural_Key</code> por el valor <code>Promotions_Total</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>TO_CHAR(PROMO_SUBCATEOGORIES.ID)</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Subcategory_Natural_Key</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>PROMO_SUBCATEGORIES.NAME</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Subcategory_Name</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>TO_CHAR(PROMO_SUBCATEGORIES.CATEGORY_ID</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>REF_Category_Natural_Key</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>TO_CHAR(PROMOTIONS.ID)</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Promotion_Natural_Key</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>PROMOTIONS.NAME</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Promotion_Name</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>TO_CHAR(PROMOTIONS.SUBCATEGORY_ID</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>REF_Subcategory_Natural_Key</code></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect2">
+<h3 id="truemapping-de-canal"><a class="anchor" href="#truemapping-de-canal"></a>6.2. Mapping de Canal</h3>
+<div class="paragraph">
+<p>Crear un componente <code>EXPRESSION</code> en la zona de mappings añadiéndole un atributo <code>TOTAL_NAME</code> con estas propiedades:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Tipo de datos: <code>VARCHAR(20)</code></p>
+</li>
+<li>
+<p>Expresión: <code>'Channels_Total'</code></p>
+</li>
+</ul>
+</div>
+<table class="tableblock frame-all grid-all spread">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Origen</th>
+<th class="tableblock halign-left valign-top">Destino en dimensión <code>Canal</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>EXPRESSION.TOTAL_NAME</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Total_Name</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>CLASSES_ONLY.CLASS</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Class_Natural_Key</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>CLASSES_ONLY.CLASS</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Class_Name</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">-</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Cambiar la expresión de <code>REF_Total_Natural_Key</code> por el valor <code>Channels_Total</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>CHANNELS.ID</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Channel_Natural_Key</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>CHANNELS.NAME</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Channel.Name</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>CHANNELS.CLASS</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>REF_Class_Natural_Key</code></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect2">
+<h3 id="truemapping-de-producto"><a class="anchor" href="#truemapping-de-producto"></a>6.3. Mapping de Producto</h3>
+<div class="paragraph">
+<p>Crear un componente <code>EXPRESSION</code> en la zona de mappings añadiéndole un atributo <code>TOTAL_NAME</code> con estas propiedades:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Tipo de datos: <code>VARCHAR(20)</code></p>
+</li>
+<li>
+<p>Expresión: <code>'Products_Total'</code></p>
+</li>
+</ul>
+</div>
+<table class="tableblock frame-all grid-all spread">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Origen</th>
+<th class="tableblock halign-left valign-top">Destino en dimensión <code>Promotion</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>EXPRESSION.TOTAL_NAME</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Total_Natural_Key</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>EXPRESSION.TOTAL_NAME</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Total_Name</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>TO_CHAR(CATEGORIES.ID)</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Category_Natural_Key</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>CATEGORIES.NAME</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Category_Name</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">-</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Cambiar la expresión de <code>REF_Total_Natural_Key</code> por el valor <code>Products_Total</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>TO_CHAR(PRODUCTS.IDENTIFIER)</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Subcategory_Natural_Key</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>SUBCATEGORIES.NAME</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Subcategory_Name</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>TO_CHAR(SUBCATEGORIES.CATEGORY_ID)</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>REF_Category_Natural_Key</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>TO_CHAR(PRODUCTS.IDENTIFIER)</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Product_Natural_Key</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>PRODUCT.NAME</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Product_Name</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>PRODUCTS.PACK_SIZE</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Products_Pack_Size</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>PRODUCTS.LIST_PRICE</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Products_List_Price</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>TO_CHAR(PRODUCTS.SUBCATEGORY_REFERENCE)</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>REF_Subcategory_Natural_Key</code></p></td>
+</tr>
+</tbody>
+</table>
 <div class="paragraph">
 <p>En la ficha <code>Projects</code>, expandir el proyecto <code>OBE, Cubes and Dimensions</code> y hacer clic con el botón derecho en <code>Mappings</code> para seleccionar <code>New Mapping</code>. Introducir <code>Load Customers Dimension</code>.</p>
 </div>
@@ -2439,8 +2653,11 @@ GRANT CONNECT, RESOURCE TO granadaw;</code></pre>
 </li>
 </ul>
 </div>
+</div>
 <div class="sect2">
-<h3 id="trueobtener-s-lo-las-provincias"><a class="anchor" href="#trueobtener-s-lo-las-provincias"></a>6.1. Obtener sólo las provincias</h3>
+<h3 id="truemapping-de-customer"><a class="anchor" href="#truemapping-de-customer"></a>6.4. Mapping de Customer</h3>
+<div class="sect3">
+<h4 id="trueobtener-s-lo-las-provincias"><a class="anchor" href="#trueobtener-s-lo-las-provincias"></a>6.4.1. Obtener sólo las provincias</h4>
 <div class="paragraph">
 <p>A partir de la tabla <code>CITIES</code> podemos obtener las provincias con sus países con</p>
 </div>
@@ -2484,8 +2701,8 @@ FROM CITIES;</code></pre>
 </tbody>
 </table>
 </div>
-<div class="sect2">
-<h3 id="truecreaci-n-de-joins"><a class="anchor" href="#truecreaci-n-de-joins"></a>6.2. Creación de joins</h3>
+<div class="sect3">
+<h4 id="truecreaci-n-de-joins"><a class="anchor" href="#truecreaci-n-de-joins"></a>6.4.2. Creación de joins</h4>
 <div class="paragraph">
 <p>Crearemos los siguientes joins mediante componentes <code>JOIN</code> en la zona de mappings:</p>
 </div>
@@ -2500,8 +2717,8 @@ FROM CITIES;</code></pre>
 </ul>
 </div>
 </div>
-<div class="sect2">
-<h3 id="trueobtener-las-regiones-y-las-subregiones"><a class="anchor" href="#trueobtener-las-regiones-y-las-subregiones"></a>6.3. Obtener las regiones y las subregiones</h3>
+<div class="sect3">
+<h4 id="trueobtener-las-regiones-y-las-subregiones"><a class="anchor" href="#trueobtener-las-regiones-y-las-subregiones"></a>6.4.3. Obtener las regiones y las subregiones</h4>
 <div class="paragraph">
 <p>Si analizamos el contenido de la tabla <code>REGIONS</code>, observamos que las regiones son las que <code>REGION_ID IS NULL</code>, mientras que las subregiones son las que <code>REGION_ID IS NOT NULL</code>.</p>
 </div>
@@ -2540,8 +2757,8 @@ FROM CITIES;</code></pre>
 </tbody>
 </table>
 </div>
-<div class="sect2">
-<h3 id="truecrear-los-mappings-entre-atributos"><a class="anchor" href="#truecrear-los-mappings-entre-atributos"></a>6.4. Crear los mappings entre atributos</h3>
+<div class="sect3">
+<h4 id="truecrear-los-mappings-entre-atributos"><a class="anchor" href="#truecrear-los-mappings-entre-atributos"></a>6.4.4. Crear los mappings entre atributos</h4>
 <div class="paragraph">
 <p>Crear un componente <code>EXPRESSION</code> en la zona de mappings añadiéndole un atributo <code>TOTAL_NAME</code> con estas propiedades:</p>
 </div>
@@ -2676,6 +2893,7 @@ FROM CITIES;</code></pre>
 </tr>
 </tbody>
 </table>
+</div>
 </div>
 </div>
 </div>
@@ -2835,7 +3053,7 @@ GROUP BY CUBE(diaSemana, familia);</code></pre>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2018-03-01 18:41:07 CET
+Last updated 2018-03-02 11:22:48 CET
 </div>
 </div>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/8.9.1/styles/github.min.css">

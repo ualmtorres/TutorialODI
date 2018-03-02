@@ -641,7 +641,7 @@ A continuación, definiremos los atributos de cada nivel:
 
 |===
 
-|=== Dimensión Producto
+=== Dimensión Producto
 
 
 image::DimensionProducto.png[Dimensión Producto y sus tablas base]
@@ -1143,6 +1143,137 @@ Las medidas del cubon son:
 
 == Creación de mappings
 
+=== Mapping de Promotion
+
+Crear un componente `EXPRESSION` en la zona de mappings añadiéndole un atributo `TOTAL_NAME` con estas propiedades:
+
+* Tipo de datos: `VARCHAR(20)`
+* Expresión: `'Promotions_Total'`
+
+[options = 'header']
+|===
+|Origen | Destino en dimensión `Promotion`
+
+|`EXPRESSION.TOTAL_NAME`
+|`Total_Natural_Key`
+
+|`EXPRESSION.TOTAL_NAME`
+|`Total_Name`
+
+|`TO_CHAR(PROMO_CATEGORIES.ID)`
+|`Category_Natural_Key`
+
+|`PROMO_CATEOGORIES.NAME`
+|`Category_Name`
+
+|-
+|Cambiar la expresión de `REF_Total_Natural_Key` por el valor `Promotions_Total`
+
+|`TO_CHAR(PROMO_SUBCATEOGORIES.ID)`
+|`Subcategory_Natural_Key`
+
+|`PROMO_SUBCATEGORIES.NAME`
+|`Subcategory_Name`
+
+|`TO_CHAR(PROMO_SUBCATEGORIES.CATEGORY_ID`
+|`REF_Category_Natural_Key`
+
+|`TO_CHAR(PROMOTIONS.ID)`
+|`Promotion_Natural_Key`
+
+|`PROMOTIONS.NAME`
+|`Promotion_Name`
+
+|`TO_CHAR(PROMOTIONS.SUBCATEGORY_ID`
+|`REF_Subcategory_Natural_Key`
+
+|===
+
+=== Mapping de Canal
+
+Crear un componente `EXPRESSION` en la zona de mappings añadiéndole un atributo `TOTAL_NAME` con estas propiedades:
+
+* Tipo de datos: `VARCHAR(20)`
+* Expresión: `'Channels_Total'`
+
+[options = 'header']
+|===
+|Origen | Destino en dimensión `Canal`
+
+|`EXPRESSION.TOTAL_NAME`
+|`Total_Name`
+
+|`CLASSES_ONLY.CLASS`
+|`Class_Natural_Key`
+
+|`CLASSES_ONLY.CLASS`
+|`Class_Name`
+
+|-
+|Cambiar la expresión de `REF_Total_Natural_Key` por el valor `Channels_Total`
+
+|`CHANNELS.ID`
+|`Channel_Natural_Key`
+
+|`CHANNELS.NAME`
+|`Channel.Name`
+
+|`CHANNELS.CLASS`
+|`REF_Class_Natural_Key`
+
+|===
+
+=== Mapping de Producto
+
+Crear un componente `EXPRESSION` en la zona de mappings añadiéndole un atributo `TOTAL_NAME` con estas propiedades:
+
+* Tipo de datos: `VARCHAR(20)`
+* Expresión: `'Products_Total'`
+
+[options = 'header']
+|===
+|Origen | Destino en dimensión `Promotion`
+
+|`EXPRESSION.TOTAL_NAME`
+|`Total_Natural_Key`
+
+|`EXPRESSION.TOTAL_NAME`
+|`Total_Name`
+
+|`TO_CHAR(CATEGORIES.ID)`
+|`Category_Natural_Key`
+
+|`CATEGORIES.NAME`
+|`Category_Name`
+
+|-
+|Cambiar la expresión de `REF_Total_Natural_Key` por el valor `Products_Total`
+
+|`TO_CHAR(PRODUCTS.IDENTIFIER)`
+|`Subcategory_Natural_Key`
+
+|`SUBCATEGORIES.NAME`
+|`Subcategory_Name`
+
+|`TO_CHAR(SUBCATEGORIES.CATEGORY_ID)`
+|`REF_Category_Natural_Key`
+
+|`TO_CHAR(PRODUCTS.IDENTIFIER)`
+|`Product_Natural_Key`
+
+|`PRODUCT.NAME`
+|`Product_Name`
+
+|`PRODUCTS.PACK_SIZE`
+|`Products_Pack_Size`
+
+|`PRODUCTS.LIST_PRICE`
+|`Products_List_Price`
+
+|`TO_CHAR(PRODUCTS.SUBCATEGORY_REFERENCE)`
+|`REF_Subcategory_Natural_Key`
+|===
+
 En la ficha `Projects`, expandir el proyecto `OBE, Cubes and Dimensions` y hacer clic con el botón derecho en `Mappings` para seleccionar `New Mapping`. Introducir `Load Customers Dimension`.
 
 La dimensión Customer la vamos a cargar con los datos de las tablas siguientes del esquema `BI_WEEK`.
@@ -1153,7 +1284,9 @@ La dimensión Customer la vamos a cargar con los datos de las tablas siguientes 
 * CUSTOMERS
 * REGIONS
 
-=== Obtener sólo las provincias
+=== Mapping de Customer
+
+==== Obtener sólo las provincias
 
 A partir de la tabla `CITIES` podemos obtener las provincias con sus países con 
 
@@ -1177,14 +1310,14 @@ Crear el siguiente mapping:
 |CITIES.COUNTRY_ISO_CODE | PROVS_ONLY.COUNTRY_ISO_CODE
 |===
 
-=== Creación de joins
+==== Creación de joins
 
 Crearemos los siguientes joins mediante componentes `JOIN` en la zona de mappings:
 
 * `COUNTRIES.ISO_CODE = PROVS_ONLY.COUNTRY_ISO_CODE`
 * `CUSTOMERS.ID = ADDRESSES.CUSTOMER_ID`
 
-=== Obtener las regiones y las subregiones
+==== Obtener las regiones y las subregiones
 
 Si analizamos el contenido de la tabla `REGIONS`, observamos que las regiones son las que `REGION_ID IS NULL`, mientras que las subregiones son las que `REGION_ID IS NOT NULL`.
 
@@ -1199,7 +1332,7 @@ Crearemos dos componentes `FILTER` en la zona de mappings para obtener sólo las
 | `REG_ONLY` | `REGIONS.REGION_ID IS NULL` | `REGIONS`
 |===
 
-=== Crear los mappings entre atributos
+==== Crear los mappings entre atributos
 
 Crear un componente `EXPRESSION` en la zona de mappings añadiéndole un atributo `TOTAL_NAME` con estas propiedades:
 
